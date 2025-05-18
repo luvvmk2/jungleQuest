@@ -1,0 +1,54 @@
+/* ===== TITRE PRINCIPAL ===== */
+.menu-title {
+    -fx-font-family: "Palatino Linotype", "Georgia", serif;
+    -fx-font-size: 84px;
+    -fx-fill: linear-gradient(to bottom, #fdfcf5, #cfcab2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 12, 0.5, 0, 4);
+    -fx-opacity: 0.95;
+    -fx-text-alignment: center;
+}
+
+/* ===== STYLE DE BASE DES BOUTONS ===== */
+.menu-button {
+    -fx-background-color: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.12));
+    -fx-border-color: #ffffffcc;
+    -fx-border-width: 2;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-text-fill: #f0f0f0;
+    -fx-font-family: "Palatino Linotype", "Georgia", serif;
+    -fx-font-size: 30px;
+    -fx-padding: 14 30 14 30;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 10, 0.4, 0, 2);
+    -fx-cursor: hand;
+    -fx-opacity: 0.95;
+    -fx-transition: all 0.25s ease-in-out;
+    -fx-background-insets: 0, 1;
+    -fx-min-width: 300px;
+    -fx-max-width: 300px;
+}
+
+/* ===== HOVER ===== */
+.menu-button:hover {
+    -fx-background-color: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.35));
+    -fx-text-fill: #ffeaa7;
+    -fx-effect: dropshadow(gaussian, #fff59d, 18, 0.5, 0, 3);
+    -fx-opacity: 1.0;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+/* ===== CLICK ===== */
+.menu-button:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-translate-y: 2px;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* ===== CONTAINER DES BOUTONS ===== */
+.menu-boutons {
+    -fx-spacing: 60px; /* Plus grand espacement entre les boutons */
+    -fx-translate-y: -20px; /* Remonte légèrement le bloc */
+    -fx-alignment: center;
+}
