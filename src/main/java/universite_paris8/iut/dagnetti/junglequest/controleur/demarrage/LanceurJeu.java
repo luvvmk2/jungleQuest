@@ -1,7 +1,9 @@
 package universite_paris8.iut.dagnetti.junglequest.controleur.demarrage;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,19 +13,22 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import java.net.URL;
-import universite_paris8.iut.dagnetti.junglequest.controleur.ControleurJeu;
-import universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu;
-import universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte.Carte;
-import universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte.ChargeurCarte;
-import universite_paris8.iut.dagnetti.junglequest.modele.personnages.Joueur;
-import universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.ExtracteurSprites;
-import universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.PositionFrame;
-import universite_paris8.iut.dagnetti.junglequest.vue.CarteAffichable;
 
+import java.net.URL;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import universite_paris8.iut.dagnetti.junglequest.controleur.ControleurJeu;
+import universite_paris8.iut.dagnetti.junglequest.controleur.interfacefx.InventaireController;
+import universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu;
+import universite_paris8.iut.dagnetti.junglequest.modele.carte.Carte;
+import universite_paris8.iut.dagnetti.junglequest.modele.carte.ChargeurCarte;
+import universite_paris8.iut.dagnetti.junglequest.modele.personnages.Joueur;
+import universite_paris8.iut.dagnetti.junglequest.vue.VueBackground;
+import universite_paris8.iut.dagnetti.junglequest.vue.utilitaire.ExtracteurSprites;
+import universite_paris8.iut.dagnetti.junglequest.vue.utilitaire.PositionFrame;
+import universite_paris8.iut.dagnetti.junglequest.vue.CarteAffichable;
 
 public class LanceurJeu extends Application {
 
@@ -31,20 +36,7 @@ public class LanceurJeu extends Application {
 
     @Override
     public void start(Stage stage) {
-        try {
-            URL ressourceAudio = getClass().getResource("/universite_paris8/iut/dagnetti/junglequest/sons/musique_jeu2.mp3");
-            if (ressourceAudio != null) {
-                Media media = new Media(ressourceAudio.toExternalForm());
-                mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-                mediaPlayer.setVolume(0.25);
-                mediaPlayer.play();
-            } else {
-                System.err.println("Audio non trouvé.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        initialiserMusique();
 
         Rectangle2D ecran = Screen.getPrimary().getBounds();
         double largeur = ecran.getWidth();
@@ -56,12 +48,17 @@ public class LanceurJeu extends Application {
         try {
             int[][] grille = ChargeurCarte.chargerCarteDepuisCSV("/universite_paris8/iut/dagnetti/junglequest/cartes/jungle_map_calque1.csv");
             Carte carte = new Carte(grille);
-
             Image tileset = new Image(getClass().getResourceAsStream("/universite_paris8/iut/dagnetti/junglequest/images/tileset_jungle.png"));
             CarteAffichable carteAffichable = new CarteAffichable(carte, tileset, (int) largeur, (int) hauteur);
+            int largeurCartePx = carte.getLargeur() * ConstantesJeu.TAILLE_TUILE;
+            VueBackground vueBackground = new VueBackground((int) largeur, (int) hauteur, largeurCartePx);
+
+            racine.getChildren().add(vueBackground); // ← fond
+           // racine.getChildren().addAll(carteAffichable, spriteJoueur); // ← carte + joueur par-dessus
+
+
 
             Image spriteSheet = new Image(getClass().getResourceAsStream("/universite_paris8/iut/dagnetti/junglequest/images/sprite1.png"));
-
             WritableImage[] idle = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 0, 5, 0));
             WritableImage[] marche = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 2, 7, 2));
             WritableImage[] attaque = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 1, 7, 1));
@@ -79,20 +76,28 @@ public class LanceurJeu extends Application {
             double xInitial = 320;
             int colonne = (int) (xInitial / ConstantesJeu.TAILLE_TUILE);
             int ligneSol = carte.chercherLigneSol(colonne);
-            double yInitial = ligneSol != -1
-                    ? (carte.getHauteur() - 1 - ligneSol) * ConstantesJeu.TAILLE_TUILE - ConstantesJeu.TAILLE_SPRITE
-                    : 0;
+            double yInitial = ligneSol != -1 ? (carte.getHauteur() - 1 - ligneSol) * ConstantesJeu.TAILLE_TUILE - ConstantesJeu.TAILLE_SPRITE : 0;
 
             ImageView spriteJoueur = new ImageView(idle[0]);
             spriteJoueur.setFitWidth(ConstantesJeu.TAILLE_SPRITE);
             spriteJoueur.setFitHeight(ConstantesJeu.TAILLE_SPRITE);
 
             Joueur joueur = new Joueur(spriteJoueur, xInitial, yInitial);
+            joueur.getInventaire().ajouterItem("Bois", 3);
+            joueur.getInventaire().ajouterItem("Clé", 1);
+            joueur.getInventaire().ajouterItem("Potion", 2);
+
             racine.getChildren().addAll(carteAffichable, spriteJoueur);
 
-            new ControleurJeu(scene, carte, carteAffichable, joueur,
+            afficherInventaire(racine, joueur, largeur, hauteur);
+
+            ControleurJeu controleurJeu = new ControleurJeu(scene, carte, carteAffichable, joueur,
                     idle, marche, attaque, preparationSaut, volSaut, sautReload,
                     chute, atterrissage, degats, mort, sort, accroupi, bouclier);
+
+            controleurJeu.setVueBackground(vueBackground);
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -103,6 +108,36 @@ public class LanceurJeu extends Application {
         stage.setFullScreen(true);
         stage.setFullScreenExitHint("");
         stage.show();
+    }
+
+    private void initialiserMusique() {
+        try {
+            URL ressourceAudio = getClass().getResource("/universite_paris8/iut/dagnetti/junglequest/sons/musique_jeu.mp3");
+            if (ressourceAudio != null) {
+                Media media = new Media(ressourceAudio.toExternalForm());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                mediaPlayer.setVolume(0.25);
+                mediaPlayer.play();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void afficherInventaire(Pane racine, Joueur joueur, double largeur, double hauteur) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/universite_paris8/iut/dagnetti/junglequest/vue/interface/Inventaire.fxml"));
+            Node inventaireUI = loader.load();
+            InventaireController inventaireController = loader.getController();
+            inventaireController.setInventaire(joueur.getInventaire());
+            inventaireUI.setLayoutX(10);
+            inventaireUI.setLayoutY(10);
+            inventaireUI.setViewOrder(-10);
+            racine.getChildren().add(inventaireUI);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private List<PositionFrame> creerListeFrames(int debutCol, int ligne, int finCol, int ligneFin) {

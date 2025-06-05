@@ -13,6 +13,9 @@ public final class ConstantesJeu {
     /** Taille d’une frame dans les spritesheets (associée aux animations du joueur) */
     public static final int TAILLE_SPRITE = 56;
 
+    /** Largeur du joueur (en pixels, utilisée pour le centrage) */
+    public static final int LARGEUR_JOUEUR = 56;
+
     // --- Mouvements et physique ---
     /** Vitesse horizontale du joueur */
     public static final int VITESSE_JOUEUR = 2;

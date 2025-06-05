@@ -1,4 +1,4 @@
-package universite_paris8.iut.dagnetti.junglequest.modele.utilitaire;
+package universite_paris8.iut.dagnetti.junglequest.vue.utilitaire;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;

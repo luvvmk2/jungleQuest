@@ -1,4 +1,4 @@
-package universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte;
+package universite_paris8.iut.dagnetti.junglequest.modele.carte;
 
 public class Carte {
 

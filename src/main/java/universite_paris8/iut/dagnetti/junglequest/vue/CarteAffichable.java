@@ -5,7 +5,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
-import universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte.Carte;
+import universite_paris8.iut.dagnetti.junglequest.modele.carte.Carte;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ public class CarteAffichable extends Pane {
     private final int colonnesTileset;
     private final int tuilesEcranLargeur;
     private final int tuilesEcranHauteur;
+    private double offsetX = 0;
 
     private final List<ImageView> tuilesAffichees = new ArrayList<>();
 
@@ -74,6 +75,10 @@ public class CarteAffichable extends Pane {
                 tuilesAffichees.add(vueTuile);
             }
         }
+    }
+    public void mettreAJourOffset(double nouvelleValeur) {
+        this.offsetX = nouvelleValeur;
+        redessiner(offsetX);
     }
 
     public Carte getCarte() {

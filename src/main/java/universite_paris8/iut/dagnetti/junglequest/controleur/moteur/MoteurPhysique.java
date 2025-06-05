@@ -1,7 +1,7 @@
 package universite_paris8.iut.dagnetti.junglequest.controleur.moteur;
 
 import universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu;
-import universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte.Carte;
+import universite_paris8.iut.dagnetti.junglequest.modele.carte.Carte;
 import universite_paris8.iut.dagnetti.junglequest.modele.personnages.Personnage;
 
 public class MoteurPhysique {
