@@ -36,6 +36,7 @@ public class LanceurJeu extends Application {
 
     @Override
     public void start(Stage stage) {
+        System.out.println("⏳ Initialisation du jeu Jungle Quest...");
         initialiserMusique();
 
         Rectangle2D ecran = Screen.getPrimary().getBounds();
@@ -48,35 +49,41 @@ public class LanceurJeu extends Application {
         try {
             int[][] grille = ChargeurCarte.chargerCarteDepuisCSV("/universite_paris8/iut/dagnetti/junglequest/cartes/jungle_map_calque1.csv");
             Carte carte = new Carte(grille);
+            System.out.println("📦 Carte chargée avec succès.");
+
             Image tileset = new Image(getClass().getResourceAsStream("/universite_paris8/iut/dagnetti/junglequest/images/tileset_jungle.png"));
+            if (tileset.isError()) System.err.println("⚠️ Erreur de chargement du tileset.");
+            else System.out.println("🌿 Tileset jungle chargé.");
+
             CarteAffichable carteAffichable = new CarteAffichable(carte, tileset, (int) largeur, (int) hauteur);
             int largeurCartePx = carte.getLargeur() * ConstantesJeu.TAILLE_TUILE;
             VueBackground vueBackground = new VueBackground((int) largeur, (int) hauteur, largeurCartePx);
+            System.out.println("🌄 Background dynamique initialisé.");
 
-            racine.getChildren().add(vueBackground); // ← fond
-           // racine.getChildren().addAll(carteAffichable, spriteJoueur); // ← carte + joueur par-dessus
+            racine.getChildren().add(vueBackground);
 
-
-
-            Image spriteSheet = new Image(getClass().getResourceAsStream("/universite_paris8/iut/dagnetti/junglequest/images/sprite1.png"));
-            WritableImage[] idle = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 0, 5, 0));
-            WritableImage[] marche = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 2, 7, 2));
-            WritableImage[] attaque = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 1, 7, 1));
-            WritableImage[] preparationSaut = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 3, 1, 3));
-            WritableImage[] volSaut = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(2, 3, 5, 3));
-            WritableImage[] sautReload = ExtracteurSprites.extraire(spriteSheet, List.of(new PositionFrame(6, 3), new PositionFrame(0, 4)));
-            WritableImage[] chute = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(1, 4, 4, 4));
-            WritableImage[] atterrissage = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(5, 4, 7, 4));
-            WritableImage[] degats = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 6, 3, 6));
-            WritableImage[] mort = ExtracteurSprites.extraire(spriteSheet, concatFrames(creerListeFrames(0, 6, 7, 6), creerListeFrames(0, 7, 3, 7)));
-            WritableImage[] sort = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 8, 7, 8));
-            WritableImage[] accroupi = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 9, 2, 9));
-            WritableImage[] bouclier = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 10, 2, 10));
+            System.out.println("🧠 Extraction des animations du personnage...");
+            Image personnage = new Image(getClass().getResourceAsStream("/universite_paris8/iut/dagnetti/junglequest/images/sprite1.png"));
+            WritableImage[] idle = ExtracteurSprites.idle(personnage);
+            WritableImage[] attaque = ExtracteurSprites.attaque(personnage);
+            WritableImage[] marche = ExtracteurSprites.marche(personnage);
+            WritableImage[] accroupi = ExtracteurSprites.accroupi(personnage);
+            WritableImage[] preparationSaut = ExtracteurSprites.preparationSaut(personnage);
+            WritableImage[] volSaut = ExtracteurSprites.volSaut(personnage);
+            WritableImage[] sautReload = ExtracteurSprites.sautReload(personnage);
+            WritableImage[] chute = ExtracteurSprites.chute(personnage);
+            WritableImage[] atterrissage = ExtracteurSprites.atterrissage(personnage);
+            WritableImage[] degats = ExtracteurSprites.degats(personnage);
+            WritableImage[] mort = ExtracteurSprites.mort(personnage);
+            WritableImage[] sort = ExtracteurSprites.sort(personnage);
+            WritableImage[] bouclier = ExtracteurSprites.bouclier(personnage);
+            System.out.println("✅ Animations extraites.");
 
             double xInitial = 320;
             int colonne = (int) (xInitial / ConstantesJeu.TAILLE_TUILE);
             int ligneSol = carte.chercherLigneSol(colonne);
-            double yInitial = ligneSol != -1 ? (carte.getHauteur() - 1 - ligneSol) * ConstantesJeu.TAILLE_TUILE - ConstantesJeu.TAILLE_SPRITE : 0;
+            double yInitial = ligneSol != -1 ? (carte.getHauteur() - 1 - ligneSol) * ConstantesJeu.TAILLE_TUILE - ConstantesJeu.TAILLE_SPRITE : 56;
+            System.out.printf("🧍 Position initiale du joueur : (%.0f, %.0f)\n", xInitial, yInitial);
 
             ImageView spriteJoueur = new ImageView(idle[0]);
             spriteJoueur.setFitWidth(ConstantesJeu.TAILLE_SPRITE);
@@ -86,9 +93,9 @@ public class LanceurJeu extends Application {
             joueur.getInventaire().ajouterItem("Bois", 3);
             joueur.getInventaire().ajouterItem("Clé", 1);
             joueur.getInventaire().ajouterItem("Potion", 2);
+            System.out.println("🎒 Inventaire initialisé : Bois x3, Clé x1, Potion x2.");
 
             racine.getChildren().addAll(carteAffichable, spriteJoueur);
-
             afficherInventaire(racine, joueur, largeur, hauteur);
 
             ControleurJeu controleurJeu = new ControleurJeu(scene, carte, carteAffichable, joueur,
@@ -97,9 +104,8 @@ public class LanceurJeu extends Application {
 
             controleurJeu.setVueBackground(vueBackground);
 
-
-
         } catch (IOException e) {
+            System.err.println("❌ Erreur critique : " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -108,6 +114,7 @@ public class LanceurJeu extends Application {
         stage.setFullScreen(true);
         stage.setFullScreenExitHint("");
         stage.show();
+        System.out.println("🚀 Jeu lancé avec succès.");
     }
 
     private void initialiserMusique() {
@@ -119,9 +126,10 @@ public class LanceurJeu extends Application {
                 mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                 mediaPlayer.setVolume(0.25);
                 mediaPlayer.play();
+                System.out.println("🎵 Musique de fond lancée.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("⚠️ Erreur musique : " + e.getMessage());
         }
     }
 
@@ -135,8 +143,9 @@ public class LanceurJeu extends Application {
             inventaireUI.setLayoutY(10);
             inventaireUI.setViewOrder(-10);
             racine.getChildren().add(inventaireUI);
+            System.out.println("🖼️ Interface d'inventaire chargée.");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("❌ Inventaire UI non chargé : " + e.getMessage());
         }
     }
 

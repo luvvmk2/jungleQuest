@@ -70,7 +70,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                universite_paris8.universite_paris8.iut.dagnetti.junglequest/universite_paris8.universite_paris8.iut.dagnetti.junglequest.HelloApplication
+                                universite_paris8.iut.dagnetti.junglequest.controleur.demarrage.LanceurJeu
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

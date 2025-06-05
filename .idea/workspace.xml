@@ -4,29 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="04ca2a54-06d3-49ed-b803-58534b0974e2" name="Changes" comment="new">
-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/interfacefx/InventaireController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/item/Inventaire.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/VueBackground.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/VueJeu.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/bg_avant.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/bg_loin.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/bg_middle.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/items/bois.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/styles/inventaire.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/vue/interface/Inventaire.fxml" afterDir="false" />
+    <list default="true" id="04ca2a54-06d3-49ed-b803-58534b0974e2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/interfacefx/InventaireController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/interfacefx/InventaireController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/personnages/Joueur.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/personnages/Joueur.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/Carte/Carte.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/carte/Carte.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/Carte/ChargeurCarte.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/carte/ChargeurCarte.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/utilitaire/ExtracteurSprites.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/PositionFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/utilitaire/PositionFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/CarteAffichable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/CarteAffichable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/bg_avant.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/background_avant.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/bg_loin.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/background_arriere.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/bg_middle.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/background_milieu.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/parallax/back.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/parallax/far.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/parallax/middle.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,9 +30,6 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Record" />
-        <option value="FxmlFile" />
-        <option value="JavaFXApplication" />
         <option value="Class" />
       </list>
     </option>
@@ -46,23 +37,11 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="v2" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;luvvmk2&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/luvvmk2/jungleQuest.git&quot;,
-    &quot;accountId&quot;: &quot;412f3321-1a82-47f9-ad74-f6acd0611486&quot;
-  }
-}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -91,39 +70,32 @@
     &quot;Application.TestChargementCarte.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;v2&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;v3&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/agnet/IdeaProjects/JungleQuest/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/items&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/agnet/IdeaProjects/JungleQuest/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="Push.Settings">
-    <force-push-targets>
-      <force-push-target remote-path="origin" branch="v2" />
-    </force-push-targets>
-  </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\images\items" />
       <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\sons" />
       <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\images" />
       <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\cartes" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\images" />
-      <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\bg_loin" />
       <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\images\parallax" />
       <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\java\universite_paris8\iut\dagnetti\junglequest\vue" />
+      <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\images" />
       <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\maps" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -161,17 +133,14 @@
       <list>
         <item itemvalue="Application.MenuPrincipal" />
         <item itemvalue="Application.LanceurJeu" />
-        <item itemvalue="Application.MenuPrincipal" />
-        <item itemvalue="Application.LanceurJeu" />
-        <item itemvalue="Application.MenuPrincipal" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.227" />
-        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.227" />
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.17890.1" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.17890.1" />
       </set>
     </attachedChunks>
   </component>
@@ -188,52 +157,13 @@
       <workItem from="1747399615180" duration="3265000" />
       <workItem from="1747480141586" duration="25362000" />
       <workItem from="1747520346225" duration="11547000" />
-      <workItem from="1747593370378" duration="15731000" />
-      <workItem from="1747684756803" duration="1377000" />
-      <workItem from="1747686687767" duration="41000" />
-      <workItem from="1748329072738" duration="224000" />
-      <workItem from="1748945192875" duration="480000" />
-      <workItem from="1748986616798" duration="7000" />
-      <workItem from="1748986637957" duration="13778000" />
-      <workItem from="1749103441696" duration="63000" />
+      <workItem from="1747593370378" duration="15504000" />
+      <workItem from="1749112627755" duration="90000" />
+      <workItem from="1749112769897" duration="2938000" />
     </task>
-    <task id="LOCAL-00001" summary="new">
-      <option name="closed" value="true" />
-      <created>1747611334155</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1747611334155</updated>
-    </task>
-    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="new" />
-    <option name="LAST_COMMIT_MESSAGE" value="new" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint enabled="true" type="java-exception">
-          <properties class="java.lang.IllegalAccessException" package="java.lang" />
-          <option name="timeStamp" value="2" />
-        </breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

@@ -97,8 +97,8 @@ public class GestionAnimation {
         }
     }
 
-    public void animerDegats(ImageView sprite) {
-        sprite.setImage(degats[0]);
+    public void animerDegats(ImageView personnage) {
+        personnage.setImage(degats[0]);
     }
 
     public void animerMort(ImageView sprite, int frame) {
@@ -107,26 +107,26 @@ public class GestionAnimation {
         }
     }
 
-    public void animerSort(ImageView sprite, int frame) {
+    public void animerSort(ImageView personnage, int frame) {
         if (frame >= 0 && frame < sort.length) {
-            sprite.setImage(sort[frame]);
+            personnage.setImage(sort[frame]);
         }
     }
 
-    public void animerAccroupi(ImageView sprite) {
-        sprite.setImage(accroupi[0]);
+    public void animerAccroupi(ImageView personnage) {
+        personnage.setImage(accroupi[0]);
     }
 
-    public void animerBouclier(ImageView sprite) {
-        sprite.setImage(bouclier[0]);
+    public void animerBouclier(ImageView personnage) {
+        personnage.setImage(bouclier[0]);
     }
 
-    public void animerPreparationSaut(ImageView sprite) {
-        sprite.setImage(preparationSaut[0]);
+    public void animerPreparationSaut(ImageView personnage) {
+        personnage.setImage(preparationSaut[0]);
     }
 
-    public void animerAtterrissage(ImageView sprite) {
-        sprite.setImage(atterrissage[0]);
+    public void animerAtterrissage(ImageView personnage) {
+        personnage.setImage(atterrissage[0]);
     }
 
     public void demandeCombo() {

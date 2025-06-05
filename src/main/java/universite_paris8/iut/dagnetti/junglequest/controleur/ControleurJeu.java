@@ -16,11 +16,6 @@ import universite_paris8.iut.dagnetti.junglequest.vue.VueBackground;
 import universite_paris8.iut.dagnetti.junglequest.vue.animation.GestionAnimation;
 import javafx.scene.image.WritableImage;
 
-/**
- * Contrôleur principal du jeu.
- * Gère les entrées clavier/souris, le moteur physique, les animations,
- * et recentre dynamiquement la carte autour du joueur.
- */
 public class ControleurJeu {
 
     private final MoteurPhysique moteur = new MoteurPhysique();
@@ -34,8 +29,6 @@ public class ControleurJeu {
     private int compteurAttaque = 0;
     private int frameMort = 0;
     private int frameSort = 0;
-
-    private final int largeurEcran;
     private double offsetX = 0;
 
     public ControleurJeu(Scene scene, Carte carte, CarteAffichable carteAffichable, Joueur joueur,
@@ -50,9 +43,7 @@ public class ControleurJeu {
         this.carteAffichable = carteAffichable;
         this.joueur = joueur;
         this.clavier = new GestionClavier(scene);
-        this.largeurEcran = (int) scene.getWidth();
 
-        // Initialisation des animations du joueur
         this.animation = new GestionAnimation(
                 idle, marche, attaque,
                 preparationSaut, volSaut, sautReload,
@@ -61,7 +52,6 @@ public class ControleurJeu {
                 sort, accroupi, bouclier
         );
 
-        // Détection du clic gauche pour attaquer
         scene.setOnMousePressed(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
                 if (!joueur.estEnAttaque()) {
@@ -74,7 +64,6 @@ public class ControleurJeu {
             }
         });
 
-        // Boucle de jeu principale : met à jour le joueur à chaque frame
         new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -83,12 +72,7 @@ public class ControleurJeu {
         }.start();
     }
 
-
-    /**
-     * Met à jour la logique du jeu (entrée, physique, animation, scroll).
-     */
     private void mettreAJour() {
-        // Entrées clavier
         boolean gauche = clavier.estAppuyee(KeyCode.Q) || clavier.estAppuyee(KeyCode.LEFT);
         boolean droite = clavier.estAppuyee(KeyCode.D) || clavier.estAppuyee(KeyCode.RIGHT);
         boolean toucheSaut = clavier.estAppuyee(KeyCode.SPACE);
@@ -100,43 +84,31 @@ public class ControleurJeu {
         boolean touchePreparationSaut = clavier.estAppuyee(KeyCode.DIGIT3);
         boolean toucheAtterrissage = clavier.estAppuyee(KeyCode.DIGIT4);
 
-        // Déplacement horizontal
         if (gauche) {
             joueur.deplacerGauche(VITESSE_JOUEUR);
         } else if (droite) {
             joueur.deplacerDroite(VITESSE_JOUEUR);
         } else {
-            joueur.arreter();  // Si aucune touche directionnelle, on arrête le mouvement
+            joueur.arreter();
         }
 
-        // Saut si le joueur est au sol
         if (toucheSaut && joueur.estAuSol()) {
             joueur.sauter(IMPULSION_SAUT);
         }
 
-        // Centrage automatique du scroll autour du joueur
-        double offset = joueur.getX() - largeurEcran / 2.0;
-        double offsetMax = carte.getLargeur() * TAILLE_TUILE - largeurEcran;
-        offsetX = Math.max(0, Math.min(offset, offsetMax));
+        moteur.mettreAJourPhysique(joueur, carte, offsetX);
+        offsetX = joueur.getX() - 640;
+        if (offsetX < 0) offsetX = 0;
+        carteAffichable.redessiner(offsetX);
 
-        // Moteur physique (gravité, collisions, mise à jour des coordonnées)
-        moteur.mettreAJourPhysique(joueur, carte, 0); // Le offsetX ne doit PAS être appliqué ici
-
-        // Mise à jour du scroll visuel de la carte
-        carteAffichable.mettreAJourOffset(offsetX);
         if (vueBackground != null) {
             vueBackground.mettreAJourScroll(offsetX);
         }
 
 
-        // Placement visuel du sprite à l'écran (coordonnées monde – scroll)
+        // --- ANIMATION ---
         ImageView sprite = joueur.getSprite();
-        double xEcran = joueur.getX() - offsetX;
-        sprite.setX(xEcran);
-        sprite.setY(joueur.getY());
 
-
-        // Gestion des animations selon l’état du joueur
         if (toucheDegats) {
             animation.animerDegats(sprite);
         } else if (toucheMort) {
@@ -165,11 +137,10 @@ public class ControleurJeu {
             animation.animerIdle(sprite, DELAI_FRAME);
         }
 
-        // Inversion horizontale du sprite selon la direction
         sprite.setScaleX(joueur.estVersGauche() ? -1 : 1);
     }
-
     public void setVueBackground(VueBackground vueBackground) {
         this.vueBackground = vueBackground;
     }
+
 }

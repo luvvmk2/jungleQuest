@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import universite_paris8.iut.dagnetti.junglequest.controleur.demarrage.LanceurJeu;
 
+
 public class MenuPrincipal extends Application {
 
     private AudioClip ambiance; // déclaré ici pour pouvoir le stopper

@@ -46,7 +46,6 @@ public class CarteAffichable extends Pane {
 
         int hauteurCarte = carteLogique.getHauteur();
         int largeurCarte = carteLogique.getLargeur();
-
         for (int ligne = 0; ligne < tuilesEcranHauteur; ligne++) {
             int ligneCarte = ligne;  // Logique naturelle : du haut vers le bas
 
