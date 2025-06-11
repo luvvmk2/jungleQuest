@@ -11,6 +11,8 @@ import static universite_paris8.iut.dagnetti.junglequest.modele.donnees.Constant
 import universite_paris8.iut.dagnetti.junglequest.modele.carte.Carte;
 import universite_paris8.iut.dagnetti.junglequest.controleur.moteur.MoteurPhysique;
 import universite_paris8.iut.dagnetti.junglequest.modele.personnages.Joueur;
+import universite_paris8.iut.dagnetti.junglequest.modele.bloc.BlocManager;
+import universite_paris8.iut.dagnetti.junglequest.modele.bloc.TileType;
 import universite_paris8.iut.dagnetti.junglequest.vue.CarteAffichable;
 import universite_paris8.iut.dagnetti.junglequest.vue.VueBackground;
 import universite_paris8.iut.dagnetti.junglequest.vue.animation.GestionAnimation;
@@ -175,28 +177,34 @@ public class ControleurJeu {
         this.vueBackground = vueBackground;
     }
 
-    private void gererClicDroit(double xScene, double yScene){
+    private void gererClicDroit(double xScene, double yScene) {
         int colonne = (int) ((xScene + offsetX) / TAILLE_TUILE);
         int ligne = (int) (yScene / TAILLE_TUILE);
 
-        if (colonne < 0 || colonne >= carte.getLargeur() || ligne < 0 || ligne >= carte.getHauteur()){
+        if (colonne < 0 || colonne >= carte.getLargeur() || ligne < 0 || ligne >= carte.getHauteur()) {
             return;
         }
+
         String selection = inventaireController != null ? inventaireController.getItemSelectionne() : null;
-        if (selection != null && joueur.getInventaire().retirerItem(selection, 1));
-        carte.setValeurTuile(ligne, colonne, -1);
-        if (inventaireController != null){
-            inventaireController.deselectionner();
-            inventaireController.rafraichir();
-        }else { int id = carte.getValeurTuile(ligne, colonne);
-            if (id != Carte.TUILE_VIDE){
-                carte.setValeurTuile(ligne, colonne, Carte.TUILE_VIDE);
-                joueur.getInventaire().ajouterItem("Bois",1);
+
+        if (selection != null) {
+            if (joueur.getInventaire().retirerItem(selection, 1)) {
+                carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
+            }
+            if (inventaireController != null) {
+                inventaireController.deselectionner();
+                inventaireController.rafraichir();
+            }
+        } else {
+            int idAvant = carte.getValeurTuile(ligne, colonne);
+            if (BlocManager.casserBloc(carte, ligne, colonne) && idAvant != Carte.TUILE_VIDE) {
+                joueur.getInventaire().ajouterItem("Bois", 1);
                 if (inventaireController != null) {
                     inventaireController.rafraichir();
                 }
             }
         }
+
         carteAffichable.redessiner(offsetX);
-        }
+    }
 }
