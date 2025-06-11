@@ -180,31 +180,32 @@ public class ControleurJeu {
     private void gererClicDroit(double xScene, double yScene) {
         int colonne = (int) ((xScene + offsetX) / TAILLE_TUILE);
         int ligne = (int) (yScene / TAILLE_TUILE);
+        boolean dansCarte = colonne >= 0 && colonne < carte.getLargeur()
+                && ligne >= 0 && ligne < carte.getHauteur();
 
-        if (colonne < 0 || colonne >= carte.getLargeur() || ligne < 0 || ligne >= carte.getHauteur()) {
-            return;
-        }
+        if (dansCarte) {
 
-        String selection = inventaireController != null ? inventaireController.getItemSelectionne() : null;
+            String selection = inventaireController != null ? inventaireController.getItemSelectionne() : null;
 
-        if (selection != null) {
-            if (joueur.getInventaire().retirerItem(selection, 1)) {
-                carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
-            }
-            if (inventaireController != null) {
-                inventaireController.deselectionner();
-                inventaireController.rafraichir();
-            }
-        } else {
-            int idAvant = carte.getValeurTuile(ligne, colonne);
-            if (BlocManager.casserBloc(carte, ligne, colonne) && idAvant != Carte.TUILE_VIDE) {
-                joueur.getInventaire().ajouterItem("Bois", 1);
+            if (selection != null) {
+                if (joueur.getInventaire().retirerItem(selection, 1)) {
+                    carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
+                }
                 if (inventaireController != null) {
+                    inventaireController.deselectionner();
                     inventaireController.rafraichir();
                 }
+            } else {
+                int idAvant = carte.getValeurTuile(ligne, colonne);
+                if (BlocManager.casserBloc(carte, ligne, colonne) && idAvant != Carte.TUILE_VIDE) {
+                    joueur.getInventaire().ajouterItem("Bois", 1);
+                    if (inventaireController != null) {
+                        inventaireController.rafraichir();
+                    }
+                }
             }
-        }
 
-        carteAffichable.redessiner(offsetX);
+            carteAffichable.redessiner(offsetX);
+        }
     }
 }

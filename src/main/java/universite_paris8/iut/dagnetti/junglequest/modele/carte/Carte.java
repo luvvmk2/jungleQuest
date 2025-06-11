@@ -34,10 +34,11 @@ public class Carte {
      * Modifie la valeur d'une tuile de la carte si les coordonées sont valides.
      */
     public void setValeurTuile(int ligne, int colonne, int valeur){
-        if (ligne < 0 || ligne >= hauteur || colonne < 0 || colonne >= largeur){
-            return;
+        boolean coordonneesValides = ligne >= 0 && ligne < hauteur
+                && colonne >= 0 && colonne < largeur;
+        if (coordonneesValides) {
+            grille[ligne][colonne] = valeur;
         }
-        grille[ligne][colonne] = valeur;
     }
 
     public boolean estSolide(int ligne, int colonne) {

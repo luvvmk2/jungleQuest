@@ -12,6 +12,9 @@ public final class BlocManager {
 
     private BlocManager() {}
 
+    /** Vie restante par groupe d'arbres identifiés par une clé unique */
+    private static final Map<String, Integer> vieArbres = new HashMap<>();
+
     /**
      * Casse un bloc et applique des règles spécifiques selon son type.
      * <p>
@@ -27,17 +30,49 @@ public final class BlocManager {
             return false;
         }
 
-        switch (type) {
-            case TERRE -> {
-                supprimerHerbeAuDessus(carte, ligne, colonne);
-                carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
-                return true;
-            }
-            default -> {
-                carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
-                return true;
-            }
+        if (type == TileType.TERRE) {
+            supprimerHerbeAuDessus(carte, ligne, colonne);
+            carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
+            return true;
         }
+
+        if (type == TileType.ARBRE) {
+            return casserArbre(carte, ligne, colonne);
+        }
+
+        carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
+        return true;
+    }
+
+    /**
+     * Gère la destruction progressive d'un arbre.
+     */
+    private static boolean casserArbre(Carte carte, int ligne, int colonne) {
+        List<int[]> groupe = blocsConnectes(carte, ligne, colonne);
+        String cle = creerCle(groupe);
+        int vieRestante = vieArbres.getOrDefault(cle, 3);
+        vieRestante--;
+        if (vieRestante <= 0) {
+            for (int[] pos : groupe) {
+                carte.setValeurTuile(pos[0], pos[1], TileType.VIDE.getId());
+            }
+            vieArbres.remove(cle);
+        } else {
+            vieArbres.put(cle, vieRestante);
+        }
+        return true;
+    }
+
+    /**
+     * Génère une clé unique pour identifier un groupe de tuiles.
+     */
+    private static String creerCle(List<int[]> groupe) {
+        List<String> coords = new ArrayList<>();
+        for (int[] p : groupe) {
+            coords.add(p[0] + "," + p[1]);
+        }
+        Collections.sort(coords);
+        return String.join(";", coords);
     }
 
     private static void supprimerHerbeAuDessus(Carte carte, int ligne, int colonne) {
