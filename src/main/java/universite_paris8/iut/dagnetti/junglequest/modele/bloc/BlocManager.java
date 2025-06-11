@@ -88,7 +88,8 @@ public final class BlocManager {
      */
     public static List<int[]> blocsConnectes(Carte carte, int ligne, int colonne) {
         int cible = carte.getValeurTuile(ligne, colonne);
-        if (cible == TileType.VIDE.getId()) {
+        TileType typeCible = TileType.fromId(cible);
+        if (typeCible == null || typeCible == TileType.VIDE) {
             return List.of();
         }
         List<int[]> resultat = new ArrayList<>();
@@ -102,7 +103,7 @@ public final class BlocManager {
             int[] pos = pile.pop();
             int l = pos[0];
             int c = pos[1];
-            if (carte.getValeurTuile(l, c) != cible) {
+            if (TileType.fromId(carte.getValeurTuile(l, c)) != typeCible) {
                 continue;
             }
             resultat.add(pos);
@@ -112,7 +113,7 @@ public final class BlocManager {
                 if (nl < 0 || nl >= carte.getHauteur() || nc < 0 || nc >= carte.getLargeur()) {
                     continue;
                 }
-                if (carte.getValeurTuile(nl, nc) == cible) {
+                if (TileType.fromId(carte.getValeurTuile(nl, nc)) == typeCible) {
                     String key = nl + "," + nc;
                     if (visite.add(key)) {
                         pile.push(new int[]{nl, nc});
