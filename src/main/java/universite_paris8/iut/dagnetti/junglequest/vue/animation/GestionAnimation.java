@@ -85,10 +85,7 @@ public class GestionAnimation {
                 attaqueTerminee = true;
                 comboDemande = false;
                 finAttaque.run();
-                return;
-            }
-
-            if (frameAttaque >= attaque.length) {
+            } else if (frameAttaque >= attaque.length) {
                 frameAttaque = 0;
                 attaqueTerminee = true;
                 comboDemande = false;

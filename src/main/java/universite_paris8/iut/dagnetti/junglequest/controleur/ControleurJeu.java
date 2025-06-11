@@ -5,6 +5,10 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import static universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu.*;
 
@@ -18,6 +22,7 @@ import universite_paris8.iut.dagnetti.junglequest.vue.VueBackground;
 import universite_paris8.iut.dagnetti.junglequest.vue.animation.GestionAnimation;
 import javafx.scene.image.WritableImage;
 import universite_paris8.iut.dagnetti.junglequest.controleur.interfacefx.InventaireController;
+import universite_paris8.iut.dagnetti.junglequest.controleur.interfacefx.ParametresController;
 
 public class ControleurJeu {
 
@@ -35,6 +40,9 @@ public class ControleurJeu {
     private int frameMort = 0;
     private int frameSort = 0;
     private double offsetX = 0;
+
+    private boolean enPause = false;
+    private Stage fenetreParametres;
 
     /**
      * Initialise le contrôleur principal du jeu : clavier, animation, logique du joueur et gestion des clics.
@@ -80,6 +88,16 @@ public class ControleurJeu {
                 gererClicDroit(e.getX(), e.getY());
             } });
 
+        scene.addEventHandler(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.P) {
+                if (fenetreParametres == null) {
+                    ouvrirParametres(scene);
+                } else {
+                    fenetreParametres.close();
+                }
+            }
+        });
+
         // Lancement de la boucle de jeu
         new AnimationTimer() {
             @Override
@@ -93,6 +111,9 @@ public class ControleurJeu {
      * Méthode principale appelée à chaque frame pour gérer les actions du joueur et l'affichage.
      */
     private void mettreAJour() {
+        if (enPause) {
+            return;
+        }
         // Récupération des touches clavier pressées
         boolean gauche = clavier.estAppuyee(KeyCode.Q) || clavier.estAppuyee(KeyCode.LEFT);
         boolean droite = clavier.estAppuyee(KeyCode.D) || clavier.estAppuyee(KeyCode.RIGHT);
@@ -180,31 +201,52 @@ public class ControleurJeu {
     private void gererClicDroit(double xScene, double yScene) {
         int colonne = (int) ((xScene + offsetX) / TAILLE_TUILE);
         int ligne = (int) (yScene / TAILLE_TUILE);
+        boolean dansCarte = colonne >= 0 && colonne < carte.getLargeur()
+                && ligne >= 0 && ligne < carte.getHauteur();
 
-        if (colonne < 0 || colonne >= carte.getLargeur() || ligne < 0 || ligne >= carte.getHauteur()) {
-            return;
-        }
+        if (dansCarte) {
 
-        String selection = inventaireController != null ? inventaireController.getItemSelectionne() : null;
+            String selection = inventaireController != null ? inventaireController.getItemSelectionne() : null;
 
-        if (selection != null) {
-            if (joueur.getInventaire().retirerItem(selection, 1)) {
-                carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
-            }
-            if (inventaireController != null) {
-                inventaireController.deselectionner();
-                inventaireController.rafraichir();
-            }
-        } else {
-            int idAvant = carte.getValeurTuile(ligne, colonne);
-            if (BlocManager.casserBloc(carte, ligne, colonne) && idAvant != Carte.TUILE_VIDE) {
-                joueur.getInventaire().ajouterItem("Bois", 1);
+            if (selection != null) {
+                if (joueur.getInventaire().retirerItem(selection, 1)) {
+                    carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
+                }
                 if (inventaireController != null) {
+                    inventaireController.deselectionner();
                     inventaireController.rafraichir();
                 }
+            } else {
+                int idAvant = carte.getValeurTuile(ligne, colonne);
+                if (BlocManager.casserBloc(carte, ligne, colonne) && idAvant != Carte.TUILE_VIDE) {
+                    joueur.getInventaire().ajouterItem("Bois", 1);
+                    if (inventaireController != null) {
+                        inventaireController.rafraichir();
+                    }
+                }
             }
-        }
 
-        carteAffichable.redessiner(offsetX);
+            carteAffichable.redessiner(offsetX);
+        }
+    }
+
+    private void ouvrirParametres(Scene scene) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/universite_paris8/iut/dagnetti/junglequest/vue/interface/Parametres.fxml"));
+            Parent root = loader.load();
+            fenetreParametres = new Stage();
+            fenetreParametres.initOwner(scene.getWindow());
+            fenetreParametres.initModality(Modality.WINDOW_MODAL);
+            fenetreParametres.setTitle("Paramètres");
+            fenetreParametres.setScene(new Scene(root));
+            ParametresController controller = loader.getController();
+            controller.setStage(fenetreParametres);
+            enPause = true;
+            fenetreParametres.setOnHidden(e -> { enPause = false; fenetreParametres = null; });
+            fenetreParametres.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

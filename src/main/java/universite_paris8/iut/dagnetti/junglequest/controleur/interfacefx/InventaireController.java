@@ -41,12 +41,11 @@ public class InventaireController implements Initializable {
 
         if (inventaire == null) {
             System.err.println("Inventaire non initialisé (null).");
-            return;
+        } else {
+            afficherSlots();
+            itemSelectionne = null;
+            System.out.println("Inventaire appliqué au contrôleur. Contenu : " + inventaire.getItems().size() + " item(s).");
         }
-
-        afficherSlots();
-        itemSelectionne = null;
-        System.out.println("Inventaire appliqué au contrôleur. Contenu : " + inventaire.getItems().size() + " item(s).");
     }
 
     /**
@@ -64,7 +63,7 @@ public class InventaireController implements Initializable {
             slotBar.getChildren().add(slot);
         }
 
-        // 🔹 Complétion visuelle avec des slots vides
+        // Complétion visuelle avec des slots vides
         int slotsUtilisés = inventaire.getItems().size();
         int slotsTotaux = 9;
 
@@ -102,7 +101,7 @@ public class InventaireController implements Initializable {
         if (icone != null) {
             slot.getChildren().add(icone);
         } else {
-            Label erreur = new Label("❌");
+            Label erreur = new Label("X");
             erreur.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
             slot.getChildren().add(erreur);
         }
