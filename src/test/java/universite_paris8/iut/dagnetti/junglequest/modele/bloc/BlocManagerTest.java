@@ -34,4 +34,21 @@ public class BlocManagerTest {
         List<int[]> res = BlocManager.blocsConnectes(carte, 0, 0);
         assertEquals(3, res.size());
     }
+
+    @Test
+    void testCasserArbreSupprimeToutLeGroupe() {
+        int A = TileType.ARBRE.getId();
+        int[][] grille = {
+                {A, A},
+                {A, A}
+        };
+        Carte carte = new Carte(grille);
+        boolean modifie = BlocManager.casserBloc(carte, 0, 0);
+        assertTrue(modifie);
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                assertEquals(TileType.VIDE.getId(), carte.getValeurTuile(i, j));
+            }
+        }
+    }
 }

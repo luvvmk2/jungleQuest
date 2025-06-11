@@ -88,6 +88,9 @@ public class ControleurJeu {
                 gererClicDroit(e.getX(), e.getY());
             } });
 
+        // Appuyer sur 'P' permet d'ouvrir ou de fermer la fenêtre des paramètres
+        // du jeu. L'événement est écouté directement sur la scène afin de ne pas
+        // interférer avec la gestion classique du clavier.
         scene.addEventHandler(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.P) {
                 if (fenetreParametres == null) {
