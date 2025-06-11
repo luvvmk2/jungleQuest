@@ -135,4 +135,14 @@ public class InventaireController implements Initializable {
     public void deselectionner(){
         itemSelectionne = null;
     }
+
+    /**
+     * Affiche ou masque l'inventaire en conservant son emplacement dans la
+     * mise en page.
+     */
+    public void basculerAffichage() {
+        boolean visible = !slotBar.isVisible();
+        slotBar.setVisible(visible);
+        slotBar.setManaged(visible);
+    }
 }
