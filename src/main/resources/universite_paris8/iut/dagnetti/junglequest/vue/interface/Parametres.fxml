@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Button?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="universite_paris8.iut.dagnetti.junglequest.controleur.interfacefx.ParametresController"
+      spacing="10" alignment="CENTER" stylesheets="@/universite_paris8/iut/dagnetti/junglequest/styles/inventaire.css"
+      padding="10">
+    <Label text="Vitesse du joueur" />
+    <Slider fx:id="sliderVitesse" min="0" max="5" blockIncrement="0.1" />
+    <Label text="Impulsion de saut" />
+    <Slider fx:id="sliderSaut" min="5" max="20" blockIncrement="0.5" />
+    <Button text="Fermer" onAction="#fermer" />
+</VBox>

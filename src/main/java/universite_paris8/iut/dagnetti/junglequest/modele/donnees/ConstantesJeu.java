@@ -17,8 +17,8 @@ public final class ConstantesJeu {
     public static final int LARGEUR_JOUEUR = 56;
 
     // --- Mouvements et physique ---
-    /** Vitesse horizontale du joueur */
-    public static final int VITESSE_JOUEUR = 1;
+    /** Vitesse horizontale du joueur (modifiable via le menu de paramètres) */
+    public static int VITESSE_JOUEUR = 1;
 
     /** Accélération gravitationnelle appliquée chaque frame */
     public static final double GRAVITE = 0.5;
@@ -26,8 +26,8 @@ public final class ConstantesJeu {
     /** Vitesse verticale maximale en chute libre */
     public static final double VITESSE_CHUTE_MAX = 2;
 
-    /** Force de l’impulsion de saut du joueur */
-    public static final double IMPULSION_SAUT = 10;
+    /** Force de l’impulsion de saut du joueur (modifiable) */
+    public static double IMPULSION_SAUT = 10;
 
     // --- Animation ---
     /** Délai entre deux frames d’animation (en nombre de frames) */
