@@ -13,15 +13,18 @@ public final class ConstantesJeu {
     /** Taille d’une frame dans les spritesheets (associée aux animations du joueur) */
     public static final int TAILLE_SPRITE = 56;
 
+    /** Largeur du joueur (en pixels, utilisée pour le centrage) */
+    public static final int LARGEUR_JOUEUR = 56;
+
     // --- Mouvements et physique ---
     /** Vitesse horizontale du joueur */
-    public static final int VITESSE_JOUEUR = 2;
+    public static final int VITESSE_JOUEUR = 1;
 
     /** Accélération gravitationnelle appliquée chaque frame */
     public static final double GRAVITE = 0.5;
 
     /** Vitesse verticale maximale en chute libre */
-    public static final double VITESSE_CHUTE_MAX = 12;
+    public static final double VITESSE_CHUTE_MAX = 2;
 
     /** Force de l’impulsion de saut du joueur */
     public static final double IMPULSION_SAUT = 10;

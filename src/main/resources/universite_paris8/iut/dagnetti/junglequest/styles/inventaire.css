@@ -1,0 +1,42 @@
+.hbox-inventaire-minimal {
+    -fx-background-color: transparent;
+    -fx-padding: 14 0 0 14;
+    -fx-spacing: 6;
+}
+
+.slot-rempli {
+    -fx-background-color: linear-gradient(to bottom, #5a3e2b, #3a281b);
+    -fx-border-color: #a2c48a;
+    -fx-border-width: 1.8;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 4, 0.2, 0, 2);
+    -fx-pref-width: 44;
+    -fx-pref-height: 44;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+.slot-vide {
+    -fx-background-color: rgba(26,26,26,0.6);
+    -fx-border-color: #444;
+    -fx-border-width: 1.2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-pref-width: 44;
+    -fx-pref-height: 44;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.3), 2, 0.2, 0, 0);
+}
+
+.label-item {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, #000000, 1, 0.1, 0, 0);
+}
+.slot-rempli:hover {
+    -fx-border-color: #c5e3aa;
+    -fx-effect: dropshadow(gaussian, rgba(140,255,140,0.5), 6, 0.2, 0, 0);
+}
+

@@ -1,0 +1,391 @@
+Index: src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package universite_paris8.iut.dagnetti.junglequest.modele.donnees;\n\n/**\n * Cette classe contient toutes les constantes générales du jeu :\n * physiques, visuelles ou temporelles.\n */\npublic final class ConstantesJeu {\n\n    // --- Dimensions ---\n    /** Taille (en pixels) d’une tuile de la carte */\n    public static final int TAILLE_TUILE = 32;\n\n    /** Taille d’une frame dans les spritesheets (associée aux animations du joueur) */\n    public static final int TAILLE_SPRITE = 56;\n\n    // --- Mouvements et physique ---\n    /** Vitesse horizontale du joueur */\n    public static final int VITESSE_JOUEUR = 2;\n\n    /** Accélération gravitationnelle appliquée chaque frame */\n    public static final double GRAVITE = 0.5;\n\n    /** Vitesse verticale maximale en chute libre */\n    public static final double VITESSE_CHUTE_MAX = 12;\n\n    /** Force de l’impulsion de saut du joueur */\n    public static final double IMPULSION_SAUT = 10;\n\n    // --- Animation ---\n    /** Délai entre deux frames d’animation (en nombre de frames) */\n    public static final int DELAI_FRAME = 8;\n\n    /** Durée totale d’une animation d’attaque (en frames) */\n    public static final int DUREE_ATTAQUE = 8 * DELAI_FRAME;\n\n    // Constructeur privé pour empêcher l’instanciation\n    private ConstantesJeu() {}\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java b/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java
+--- a/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java	
++++ b/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java	
+@@ -15,13 +15,13 @@
+ 
+     // --- Mouvements et physique ---
+     /** Vitesse horizontale du joueur */
+-    public static final int VITESSE_JOUEUR = 2;
++    public static final int VITESSE_JOUEUR = 1;
+ 
+     /** Accélération gravitationnelle appliquée chaque frame */
+     public static final double GRAVITE = 0.5;
+ 
+     /** Vitesse verticale maximale en chute libre */
+-    public static final double VITESSE_CHUTE_MAX = 12;
++    public static final double VITESSE_CHUTE_MAX = 5;
+ 
+     /** Force de l’impulsion de saut du joueur */
+     public static final double IMPULSION_SAUT = 10;
+Index: src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package universite_paris8.iut.dagnetti.junglequest.controleur;\n\nimport javafx.animation.AnimationTimer;\nimport javafx.scene.Scene;\nimport javafx.scene.image.ImageView;\nimport javafx.scene.input.KeyCode;\nimport javafx.scene.input.MouseButton;\n\nimport static universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu.*;\n\nimport universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte.Carte;\nimport universite_paris8.iut.dagnetti.junglequest.controleur.moteur.MoteurPhysique;\nimport universite_paris8.iut.dagnetti.junglequest.modele.personnages.Joueur;\nimport universite_paris8.iut.dagnetti.junglequest.vue.CarteAffichable;\nimport universite_paris8.iut.dagnetti.junglequest.vue.animation.GestionAnimation;\nimport javafx.scene.image.WritableImage;\n\npublic class ControleurJeu {\n\n    private final MoteurPhysique moteur = new MoteurPhysique();\n    private final Carte carte;\n    private final CarteAffichable carteAffichable;\n    private final Joueur joueur;\n    private final GestionClavier clavier;\n    private final GestionAnimation animation;\n\n    private int compteurAttaque = 0;\n    private int frameMort = 0;\n    private int frameSort = 0;\n    private double offsetX = 0;\n\n    public ControleurJeu(Scene scene, Carte carte, CarteAffichable carteAffichable, Joueur joueur,\n                         WritableImage[] idle, WritableImage[] marche,\n                         WritableImage[] attaque,\n                         WritableImage[] preparationSaut, WritableImage[] volSaut, WritableImage[] sautReload,\n                         WritableImage[] chute, WritableImage[] atterrissage,\n                         WritableImage[] degats, WritableImage[] mort,\n                         WritableImage[] sort, WritableImage[] accroupi, WritableImage[] bouclier) {\n\n        this.carte = carte;\n        this.carteAffichable = carteAffichable;\n        this.joueur = joueur;\n        this.clavier = new GestionClavier(scene);\n\n        this.animation = new GestionAnimation(\n                idle, marche, attaque,\n                preparationSaut, volSaut, sautReload,\n                chute, atterrissage,\n                degats, mort,\n                sort, accroupi, bouclier\n        );\n\n        scene.setOnMousePressed(e -> {\n            if (e.getButton() == MouseButton.PRIMARY) {\n                if (!joueur.estEnAttaque()) {\n                    joueur.attaquer();\n                    animation.reset();\n                    compteurAttaque = 0;\n                } else {\n                    animation.demandeCombo();\n                }\n            }\n        });\n\n        new AnimationTimer() {\n            @Override\n            public void handle(long now) {\n                mettreAJour();\n            }\n        }.start();\n    }\n\n    private void mettreAJour() {\n        boolean gauche = clavier.estAppuyee(KeyCode.Q) || clavier.estAppuyee(KeyCode.LEFT);\n        boolean droite = clavier.estAppuyee(KeyCode.D) || clavier.estAppuyee(KeyCode.RIGHT);\n        boolean toucheSaut = clavier.estAppuyee(KeyCode.SPACE);\n        boolean toucheAccroupi = clavier.estAppuyee(KeyCode.CONTROL);\n        boolean toucheBouclier = clavier.estAppuyee(KeyCode.SHIFT);\n        boolean toucheDegats = clavier.estAppuyee(KeyCode.DIGIT1);\n        boolean toucheMort = clavier.estAppuyee(KeyCode.DIGIT2);\n        boolean toucheSort = clavier.estAppuyee(KeyCode.E);\n        boolean touchePreparationSaut = clavier.estAppuyee(KeyCode.DIGIT3);\n        boolean toucheAtterrissage = clavier.estAppuyee(KeyCode.DIGIT4);\n\n        if (gauche) {\n            joueur.deplacerGauche(VITESSE_JOUEUR);\n        } else if (droite) {\n            joueur.deplacerDroite(VITESSE_JOUEUR);\n        } else {\n            joueur.arreter();\n        }\n\n        if (toucheSaut && joueur.estAuSol()) {\n            joueur.sauter(IMPULSION_SAUT);\n        }\n\n        moteur.mettreAJourPhysique(joueur, carte, offsetX);\n        offsetX = joueur.getX() - 640;\n        if (offsetX < 0) offsetX = 0;\n        carteAffichable.redessiner(offsetX);\n\n        // --- ANIMATION ---\n        ImageView sprite = joueur.getSprite();\n\n        if (toucheDegats) {\n            animation.animerDegats(sprite);\n        } else if (toucheMort) {\n            animation.animerMort(sprite, frameMort++);\n            if (frameMort >= 12) frameMort = 0;\n        } else if (toucheSort) {\n            animation.animerSort(sprite, frameSort++);\n            if (frameSort >= 8) frameSort = 0;\n        } else if (touchePreparationSaut) {\n            animation.animerIdle(sprite, DELAI_FRAME);\n            animation.animerPreparationSaut(sprite);\n        } else if (toucheAtterrissage) {\n            animation.animerAtterrissage(sprite);\n        } else if (joueur.estEnAttaque()) {\n            animation.animerAttaque(sprite, DELAI_FRAME, () -> joueur.finAttaque());\n            compteurAttaque++;\n        } else if (!joueur.estAuSol()) {\n            animation.animerSaut(sprite, joueur.getVitesseY());\n        } else if (toucheAccroupi) {\n            animation.animerAccroupi(sprite);\n        } else if (toucheBouclier) {\n            animation.animerBouclier(sprite);\n        } else if (joueur.getVitesseX() != 0) {\n            animation.animerMarche(sprite, DELAI_FRAME);\n        } else {\n            animation.animerIdle(sprite, DELAI_FRAME);\n        }\n\n        sprite.setScaleX(joueur.estVersGauche() ? -1 : 1);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java b/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java
+--- a/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java	
++++ b/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java	
+@@ -30,12 +30,19 @@
+     private double offsetX = 0;
+ 
+     public ControleurJeu(Scene scene, Carte carte, CarteAffichable carteAffichable, Joueur joueur,
+-                         WritableImage[] idle, WritableImage[] marche,
++                         WritableImage[] idle,
++                         WritableImage[] marche,
+                          WritableImage[] attaque,
+-                         WritableImage[] preparationSaut, WritableImage[] volSaut, WritableImage[] sautReload,
+-                         WritableImage[] chute, WritableImage[] atterrissage,
+-                         WritableImage[] degats, WritableImage[] mort,
+-                         WritableImage[] sort, WritableImage[] accroupi, WritableImage[] bouclier) {
++                         WritableImage[] preparationSaut,
++                         WritableImage[] volSaut,
++                         WritableImage[] sautReload,
++                         WritableImage[] chute,
++                         WritableImage[] atterrissage,
++                         WritableImage[] degats,
++                         WritableImage[] mort,
++                         WritableImage[] sort,
++                         WritableImage[] accroupi,
++                         WritableImage[] bouclier) {
+ 
+         this.carte = carte;
+         this.carteAffichable = carteAffichable;
+@@ -95,9 +102,7 @@
+         }
+ 
+         moteur.mettreAJourPhysique(joueur, carte, offsetX);
+-        offsetX = joueur.getX() - 640;
+-        if (offsetX < 0) offsetX = 0;
+-        carteAffichable.redessiner(offsetX);
++        offsetX = 0;
+ 
+         // --- ANIMATION ---
+         ImageView sprite = joueur.getSprite();
+Index: src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package universite_paris8.iut.dagnetti.junglequest.vue.fenetre;\n\nimport javafx.animation.FadeTransition;\nimport javafx.animation.TranslateTransition;\nimport javafx.application.Application;\nimport javafx.geometry.Pos;\nimport javafx.scene.Scene;\nimport javafx.scene.control.Button;\nimport javafx.scene.effect.DropShadow;\nimport javafx.scene.image.Image;\nimport javafx.scene.image.ImageView;\nimport javafx.scene.layout.StackPane;\nimport javafx.scene.layout.VBox;\nimport javafx.scene.media.AudioClip;\nimport javafx.scene.paint.Color;\nimport javafx.scene.text.Text;\nimport javafx.stage.Stage;\nimport javafx.util.Duration;\nimport universite_paris8.iut.dagnetti.junglequest.controleur.demarrage.LanceurJeu;\n\npublic class MenuPrincipal extends Application {\n\n    private AudioClip ambiance; // déclaré ici pour pouvoir le stopper\n\n    @Override\n    public void start(Stage primaryStage) {\n        // --- Arrière-plan ---\n        Image background = new Image(getClass().getResourceAsStream(\n                \"/universite_paris8/iut/dagnetti/junglequest/images/menu_principal_forest.png\"));\n        ImageView backgroundView = new ImageView(background);\n        backgroundView.setPreserveRatio(false);\n        backgroundView.setFitWidth(1920);\n        backgroundView.setFitHeight(1080);\n\n        // --- Titre animé ---\n        Text titre = new Text(\"JUNGLE QUEST\");\n        titre.getStyleClass().add(\"menu-title\");\n\n        VBox zoneTitre = new VBox(titre);\n        zoneTitre.setAlignment(Pos.TOP_CENTER);\n        zoneTitre.setTranslateY(100);\n\n        FadeTransition fadeTitre = new FadeTransition(Duration.millis(1200), titre);\n        fadeTitre.setFromValue(0);\n        fadeTitre.setToValue(1);\n        fadeTitre.setDelay(Duration.millis(300));\n\n        TranslateTransition slideTitre = new TranslateTransition(Duration.millis(1000), titre);\n        slideTitre.setFromY(-50);\n        slideTitre.setToY(0);\n        slideTitre.setDelay(Duration.millis(300));\n\n        fadeTitre.play();\n        slideTitre.play();\n\n        // --- Son d'ambiance ---\n        ambiance = new AudioClip(getClass().getResource(\n                \"/universite_paris8/iut/dagnetti/junglequest/sons/menu_jungle.mp3\"\n        ).toExternalForm());\n        ambiance.setCycleCount(AudioClip.INDEFINITE);\n        ambiance.setVolume(0.4);\n        ambiance.play();\n\n        // --- Bouton \"JOUER\" ---\n        Button jouer = new Button(\"JOUER\");\n        jouer.getStyleClass().add(\"menu-button\");\n        appliquerEffetSurvol(jouer);\n        jouer.setOnAction(e -> {\n            ambiance.stop();\n            try {\n                new LanceurJeu().start(new Stage());\n                primaryStage.close();\n            } catch (Exception ex) {\n                ex.printStackTrace();\n            }\n        });\n\n        // --- Bouton \"QUITTER\" ---\n        Button quitter = new Button(\"QUITTER\");\n        quitter.getStyleClass().add(\"menu-button\");\n        appliquerEffetSurvol(quitter);\n        quitter.setOnAction(e -> {\n            ambiance.stop();\n            primaryStage.close();\n        });\n\n        VBox boutons = new VBox(60, jouer, quitter);\n        boutons.getStyleClass().add(\"menu-boutons\");\n\n        // --- Composition ---\n        StackPane racine = new StackPane(backgroundView, zoneTitre, boutons);\n        Scene scene = new Scene(racine, 1920, 1080);\n        scene.getStylesheets().add(getClass().getResource(\n                \"/universite_paris8/iut/dagnetti/junglequest/styles/menu.css\").toExternalForm());\n\n        primaryStage.setTitle(\"Menu Principal\");\n        primaryStage.setScene(scene);\n        primaryStage.setFullScreen(true);\n        primaryStage.setFullScreenExitHint(\"\");\n        primaryStage.setResizable(false);\n        primaryStage.show();\n    }\n\n    private void appliquerEffetSurvol(Button bouton) {\n        DropShadow effet = new DropShadow(20, Color.web(\"#fff58a\", 0.6));\n        effet.setSpread(0.3);\n\n        bouton.setOnMouseEntered(e -> {\n            bouton.setEffect(effet);\n            FadeTransition fade = new FadeTransition(Duration.millis(200), bouton);\n            fade.setFromValue(1.0);\n            fade.setToValue(0.8);\n            fade.play();\n        });\n\n        bouton.setOnMouseExited(e -> {\n            bouton.setEffect(null);\n            FadeTransition fade = new FadeTransition(Duration.millis(200), bouton);\n            fade.setFromValue(0.8);\n            fade.setToValue(1.0);\n            fade.play();\n        });\n    }\n\n    public static void main(String[] args) {\n        launch(args);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java b/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java
+--- a/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java	
++++ b/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java	
+@@ -18,6 +18,7 @@
+ import javafx.util.Duration;
+ import universite_paris8.iut.dagnetti.junglequest.controleur.demarrage.LanceurJeu;
+ 
++
+ public class MenuPrincipal extends Application {
+ 
+     private AudioClip ambiance; // déclaré ici pour pouvoir le stopper
+Index: src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package universite_paris8.iut.dagnetti.junglequest.vue.animation;\n\nimport javafx.scene.image.ImageView;\nimport javafx.scene.image.WritableImage;\n\npublic class GestionAnimation {\n\n    private final WritableImage[] idle;\n    private final WritableImage[] marche;\n    private final WritableImage[] attaque;\n    private final WritableImage[] preparationSaut;\n    private final WritableImage[] volSaut;\n    private final WritableImage[] sautReload;\n    private final WritableImage[] chute;\n    private final WritableImage[] atterrissage;\n    private final WritableImage[] degats;\n    private final WritableImage[] mort;\n    private final WritableImage[] sort;\n    private final WritableImage[] accroupi;\n    private final WritableImage[] bouclier;\n\n    private int frameIdle = 0, compteurIdle = 0;\n    private int frameMarche = 0, compteurMarche = 0;\n    private int frameAttaque = 0, compteurAttaque = 0;\n\n    private boolean attaqueTerminee = true;\n    private boolean comboDemande = false;\n\n    public GestionAnimation(WritableImage[] idle, WritableImage[] marche, WritableImage[] attaque,\n                            WritableImage[] preparationSaut, WritableImage[] volSaut, WritableImage[] sautReload,\n                            WritableImage[] chute, WritableImage[] atterrissage,\n                            WritableImage[] degats, WritableImage[] mort,\n                            WritableImage[] sort, WritableImage[] accroupi, WritableImage[] bouclier) {\n        this.idle = idle;\n        this.marche = marche;\n        this.attaque = attaque;\n        this.preparationSaut = preparationSaut;\n        this.volSaut = volSaut;\n        this.sautReload = sautReload;\n        this.chute = chute;\n        this.atterrissage = atterrissage;\n        this.degats = degats;\n        this.mort = mort;\n        this.sort = sort;\n        this.accroupi = accroupi;\n        this.bouclier = bouclier;\n    }\n\n    public void animerIdle(ImageView sprite, int delai) {\n        if (compteurIdle++ >= delai) {\n            sprite.setImage(idle[frameIdle]);\n            compteurIdle = 0;\n            frameIdle = (frameIdle + 1) % idle.length;\n        }\n    }\n\n    public void animerMarche(ImageView sprite, int delai) {\n        if (compteurMarche++ >= delai) {\n            sprite.setImage(marche[frameMarche]);\n            compteurMarche = 0;\n            frameMarche = (frameMarche + 1) % marche.length;\n        }\n    }\n\n    public void animerSaut(ImageView sprite, double vitesseY) {\n        if (vitesseY < -1) {\n            sprite.setImage(volSaut[0]);\n        } else if (vitesseY > 1) {\n            sprite.setImage(chute[0]);\n        } else {\n            sprite.setImage(sautReload[0]);\n        }\n    }\n\n    public void animerAttaque(ImageView sprite, int delai, Runnable finAttaque) {\n        attaqueTerminee = false;\n\n        if (compteurAttaque++ >= delai) {\n            sprite.setImage(attaque[frameAttaque]);\n            compteurAttaque = 0;\n            frameAttaque++;\n\n            if (frameAttaque == 6 && !comboDemande) {\n                frameAttaque = 0;\n                attaqueTerminee = true;\n                comboDemande = false;\n                finAttaque.run();\n                return;\n            }\n\n            if (frameAttaque >= attaque.length) {\n                frameAttaque = 0;\n                attaqueTerminee = true;\n                comboDemande = false;\n                finAttaque.run();\n            }\n        }\n    }\n\n    public void animerDegats(ImageView sprite) {\n        sprite.setImage(degats[0]);\n    }\n\n    public void animerMort(ImageView sprite, int frame) {\n        if (frame >= 0 && frame < mort.length) {\n            sprite.setImage(mort[frame]);\n        }\n    }\n\n    public void animerSort(ImageView sprite, int frame) {\n        if (frame >= 0 && frame < sort.length) {\n            sprite.setImage(sort[frame]);\n        }\n    }\n\n    public void animerAccroupi(ImageView sprite) {\n        sprite.setImage(accroupi[0]);\n    }\n\n    public void animerBouclier(ImageView sprite) {\n        sprite.setImage(bouclier[0]);\n    }\n\n    public void animerPreparationSaut(ImageView sprite) {\n        sprite.setImage(preparationSaut[0]);\n    }\n\n    public void animerAtterrissage(ImageView sprite) {\n        sprite.setImage(atterrissage[0]);\n    }\n\n    public void demandeCombo() {\n        this.comboDemande = true;\n    }\n\n    public void reset() {\n        frameIdle = frameMarche = frameAttaque = compteurIdle = compteurMarche = compteurAttaque = 0;\n        attaqueTerminee = false;\n        comboDemande = false;\n    }\n\n    public boolean isAttaqueTerminee() {\n        return attaqueTerminee;\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java b/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java
+--- a/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java	
++++ b/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java	
+@@ -97,8 +97,8 @@
+         }
+     }
+ 
+-    public void animerDegats(ImageView sprite) {
+-        sprite.setImage(degats[0]);
++    public void animerDegats(ImageView personnage) {
++        personnage.setImage(degats[0]);
+     }
+ 
+     public void animerMort(ImageView sprite, int frame) {
+@@ -107,26 +107,26 @@
+         }
+     }
+ 
+-    public void animerSort(ImageView sprite, int frame) {
++    public void animerSort(ImageView personnage, int frame) {
+         if (frame >= 0 && frame < sort.length) {
+-            sprite.setImage(sort[frame]);
++            personnage.setImage(sort[frame]);
+         }
+     }
+ 
+-    public void animerAccroupi(ImageView sprite) {
+-        sprite.setImage(accroupi[0]);
++    public void animerAccroupi(ImageView personnage) {
++        personnage.setImage(accroupi[0]);
+     }
+ 
+-    public void animerBouclier(ImageView sprite) {
+-        sprite.setImage(bouclier[0]);
++    public void animerBouclier(ImageView personnage) {
++        personnage.setImage(bouclier[0]);
+     }
+ 
+-    public void animerPreparationSaut(ImageView sprite) {
+-        sprite.setImage(preparationSaut[0]);
++    public void animerPreparationSaut(ImageView personnage) {
++        personnage.setImage(preparationSaut[0]);
+     }
+ 
+-    public void animerAtterrissage(ImageView sprite) {
+-        sprite.setImage(atterrissage[0]);
++    public void animerAtterrissage(ImageView personnage) {
++        personnage.setImage(atterrissage[0]);
+     }
+ 
+     public void demandeCombo() {
+Index: src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package universite_paris8.iut.dagnetti.junglequest.controleur.demarrage;\n\nimport javafx.application.Application;\nimport javafx.geometry.Rectangle2D;\nimport javafx.scene.Scene;\nimport javafx.scene.image.Image;\nimport javafx.scene.image.ImageView;\nimport javafx.scene.image.WritableImage;\nimport javafx.scene.layout.Pane;\nimport javafx.stage.Screen;\nimport javafx.stage.Stage;\nimport javafx.scene.media.Media;\nimport javafx.scene.media.MediaPlayer;\nimport java.net.URL;\nimport universite_paris8.iut.dagnetti.junglequest.controleur.ControleurJeu;\nimport universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu;\nimport universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte.Carte;\nimport universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte.ChargeurCarte;\nimport universite_paris8.iut.dagnetti.junglequest.modele.personnages.Joueur;\nimport universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.ExtracteurSprites;\nimport universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.PositionFrame;\nimport universite_paris8.iut.dagnetti.junglequest.vue.CarteAffichable;\n\nimport java.io.IOException;\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class LanceurJeu extends Application {\n\n    private static MediaPlayer mediaPlayer;\n\n    @Override\n    public void start(Stage stage) {\n        try {\n            URL ressourceAudio = getClass().getResource(\"/universite_paris8/iut/dagnetti/junglequest/sons/musique_jeu2.mp3\");\n            if (ressourceAudio != null) {\n                Media media = new Media(ressourceAudio.toExternalForm());\n                mediaPlayer = new MediaPlayer(media);\n                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);\n                mediaPlayer.setVolume(0.25);\n                mediaPlayer.play();\n            } else {\n                System.err.println(\"Audio non trouvé.\");\n            }\n        } catch (Exception e) {\n            e.printStackTrace();\n        }\n\n        Rectangle2D ecran = Screen.getPrimary().getBounds();\n        double largeur = ecran.getWidth();\n        double hauteur = ecran.getHeight();\n\n        Pane racine = new Pane();\n        Scene scene = new Scene(racine, largeur, hauteur);\n\n        try {\n            int[][] grille = ChargeurCarte.chargerCarteDepuisCSV(\"/universite_paris8/iut/dagnetti/junglequest/cartes/jungle_map_calque1.csv\");\n            Carte carte = new Carte(grille);\n\n            Image tileset = new Image(getClass().getResourceAsStream(\"/universite_paris8/iut/dagnetti/junglequest/images/tileset_jungle.png\"));\n            CarteAffichable carteAffichable = new CarteAffichable(carte, tileset, (int) largeur, (int) hauteur);\n\n            Image spriteSheet = new Image(getClass().getResourceAsStream(\"/universite_paris8/iut/dagnetti/junglequest/images/sprite1.png\"));\n\n            WritableImage[] idle = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 0, 5, 0));\n            WritableImage[] marche = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 2, 7, 2));\n            WritableImage[] attaque = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 1, 7, 1));\n            WritableImage[] preparationSaut = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 3, 1, 3));\n            WritableImage[] volSaut = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(2, 3, 5, 3));\n            WritableImage[] sautReload = ExtracteurSprites.extraire(spriteSheet, List.of(new PositionFrame(6, 3), new PositionFrame(0, 4)));\n            WritableImage[] chute = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(1, 4, 4, 4));\n            WritableImage[] atterrissage = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(5, 4, 7, 4));\n            WritableImage[] degats = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 6, 3, 6));\n            WritableImage[] mort = ExtracteurSprites.extraire(spriteSheet, concatFrames(creerListeFrames(0, 6, 7, 6), creerListeFrames(0, 7, 3, 7)));\n            WritableImage[] sort = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 8, 7, 8));\n            WritableImage[] accroupi = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 9, 2, 9));\n            WritableImage[] bouclier = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 10, 2, 10));\n\n            double xInitial = 320;\n            int colonne = (int) (xInitial / ConstantesJeu.TAILLE_TUILE);\n            int ligneSol = carte.chercherLigneSol(colonne);\n            double yInitial = ligneSol != -1\n                    ? (carte.getHauteur() - 1 - ligneSol) * ConstantesJeu.TAILLE_TUILE - ConstantesJeu.TAILLE_SPRITE\n                    : 0;\n\n            ImageView spriteJoueur = new ImageView(idle[0]);\n            spriteJoueur.setFitWidth(ConstantesJeu.TAILLE_SPRITE);\n            spriteJoueur.setFitHeight(ConstantesJeu.TAILLE_SPRITE);\n\n            Joueur joueur = new Joueur(spriteJoueur, xInitial, yInitial);\n            racine.getChildren().addAll(carteAffichable, spriteJoueur);\n\n            new ControleurJeu(scene, carte, carteAffichable, joueur,\n                    idle, marche, attaque, preparationSaut, volSaut, sautReload,\n                    chute, atterrissage, degats, mort, sort, accroupi, bouclier);\n\n        } catch (IOException e) {\n            e.printStackTrace();\n        }\n\n        stage.setTitle(\"Jungle Quest\");\n        stage.setScene(scene);\n        stage.setFullScreen(true);\n        stage.setFullScreenExitHint(\"\");\n        stage.show();\n    }\n\n    private List<PositionFrame> creerListeFrames(int debutCol, int ligne, int finCol, int ligneFin) {\n        List<PositionFrame> frames = new ArrayList<>();\n        for (int l = ligne; l <= ligneFin; l++) {\n            int start = (l == ligne) ? debutCol : 0;\n            int end = (l == ligneFin) ? finCol : 7;\n            for (int c = start; c <= end; c++) {\n                frames.add(new PositionFrame(c, l));\n            }\n        }\n        return frames;\n    }\n\n    private List<PositionFrame> concatFrames(List<PositionFrame> a, List<PositionFrame> b) {\n        List<PositionFrame> result = new ArrayList<>(a);\n        result.addAll(b);\n        return result;\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java b/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java
+--- a/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java	
++++ b/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java	
+@@ -60,21 +60,26 @@
+             Image tileset = new Image(getClass().getResourceAsStream("/universite_paris8/iut/dagnetti/junglequest/images/tileset_jungle.png"));
+             CarteAffichable carteAffichable = new CarteAffichable(carte, tileset, (int) largeur, (int) hauteur);
+ 
+-            Image spriteSheet = new Image(getClass().getResourceAsStream("/universite_paris8/iut/dagnetti/junglequest/images/sprite1.png"));
++            Image personnage = new Image(getClass().getResourceAsStream("/universite_paris8/iut/dagnetti/junglequest/images/sprite1.png"));
++
++          WritableImage[] idle = ExtracteurSprites.idle(personnage);
++          WritableImage[] attaque =  ExtracteurSprites.attaque(personnage);
++          WritableImage[]  marche = ExtracteurSprites.marche(personnage);
++          WritableImage[] accroupi = ExtracteurSprites.accroupi(personnage);
++          WritableImage[] preparationSaut = ExtracteurSprites.preparationSaut(personnage);
++          WritableImage[] volSaut = ExtracteurSprites.volSaut(personnage);
++          WritableImage[] sautReload = ExtracteurSprites.sautReload(personnage);
++          WritableImage[] chute = ExtracteurSprites.chute(personnage);
++          WritableImage[] atterrissage = ExtracteurSprites.atterrissage(personnage);
++          WritableImage[] degats = ExtracteurSprites.degats(personnage);
++          WritableImage[] mort = ExtracteurSprites.mort(personnage);
++          WritableImage[] sort = ExtracteurSprites.sort(personnage);
++          WritableImage[] bouclier = ExtracteurSprites.bouclier(personnage);
+ 
+-            WritableImage[] idle = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 0, 5, 0));
+-            WritableImage[] marche = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 2, 7, 2));
+-            WritableImage[] attaque = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 1, 7, 1));
+-            WritableImage[] preparationSaut = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 3, 1, 3));
+-            WritableImage[] volSaut = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(2, 3, 5, 3));
+-            WritableImage[] sautReload = ExtracteurSprites.extraire(spriteSheet, List.of(new PositionFrame(6, 3), new PositionFrame(0, 4)));
+-            WritableImage[] chute = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(1, 4, 4, 4));
+-            WritableImage[] atterrissage = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(5, 4, 7, 4));
+-            WritableImage[] degats = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 6, 3, 6));
+-            WritableImage[] mort = ExtracteurSprites.extraire(spriteSheet, concatFrames(creerListeFrames(0, 6, 7, 6), creerListeFrames(0, 7, 3, 7)));
+-            WritableImage[] sort = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 8, 7, 8));
+-            WritableImage[] accroupi = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 9, 2, 9));
+-            WritableImage[] bouclier = ExtracteurSprites.extraire(spriteSheet, creerListeFrames(0, 10, 2, 10));
++
++
++
++
+ 
+             double xInitial = 320;
+             int colonne = (int) (xInitial / ConstantesJeu.TAILLE_TUILE);
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"04ca2a54-06d3-49ed-b803-58534b0974e2\" name=\"Changes\" comment=\"\">\n      <change afterPath=\"$PROJECT_DIR$/.gitignore\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/encodings.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/misc.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/uiDesigner.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/vcs.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.jar\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/mvnw\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/mvnw.cmd\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/pom.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/module-info.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/GestionClavier.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/personnages/Joueur.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/personnages/Personnage.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/Carte/Carte.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/Carte/ChargeurCarte.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/PositionFrame.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/CarteAffichable.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/cartes/jungle_map_calque1.csv\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/menu_principal_forest.png\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/parallax/back.png\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/parallax/far.png\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/parallax/middle.png\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/personnage_sheet.png\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/sprite1.png\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/tileset_jungle.png\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons/menu_jungle.mp3\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons/musique_jeu.mp3\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons/musique_jeu2.mp3\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/styles/menu.css\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Class\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"MavenImportPreferences\">\n    <option name=\"generalSettings\">\n      <MavenGeneralSettings>\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\n      </MavenGeneralSettings>\n    </option>\n  </component>\n  <component name=\"ProblemsViewState\">\n    <option name=\"selectedTabId\" value=\"ProjectErrors\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 1\n}</component>\n  <component name=\"ProjectId\" id=\"2xB09z9ySyRMvhEic2kBbBXQNWL\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"Application.JungleQuestApp.executor\": \"Run\",\n    \"Application.LanceurJeu.executor\": \"Run\",\n    \"Application.MenuPrincipal.executor\": \"Run\",\n    \"Application.TestAffichageJoueur.executor\": \"Run\",\n    \"Application.TestChargementCarte.executor\": \"Run\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\n    \"git-widget-placeholder\": \"master\",\n    \"ignore.virus.scanning.warn.message\": \"true\",\n    \"kotlin-language-version-configured\": \"true\",\n    \"last_opened_file_path\": \"C:/Users/agnet/IdeaProjects/JungleQuest/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons\",\n    \"node.js.detected.package.eslint\": \"true\",\n    \"node.js.detected.package.tslint\": \"true\",\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\n    \"nodejs_package_manager_path\": \"npm\",\n    \"project.structure.last.edited\": \"SDKs\",\n    \"project.structure.proportion\": \"0.15\",\n    \"project.structure.side.proportion\": \"0.2\",\n    \"settings.editor.selected.configurable\": \"preferences.keymap\",\n    \"vue.rearranger.settings.migration\": \"true\"\n  }\n}]]></component>\n  <component name=\"RecentsManager\">\n    <key name=\"CopyFile.RECENT_KEYS\">\n      <recent name=\"C:\\Users\\agnet\\IdeaProjects\\JungleQuest\\src\\main\\resources\\universite_paris8\\iut\\dagnetti\\junglequest\\sons\" />\n      <recent name=\"C:\\Users\\agnet\\IdeaProjects\\JungleQuest\\src\\main\\resources\\universite_paris8\\iut\\dagnetti\\junglequest\\images\" />\n      <recent name=\"C:\\Users\\agnet\\IdeaProjects\\JungleQuest\\src\\main\\resources\\universite_paris8\\iut\\dagnetti\\junglequest\\cartes\" />\n    </key>\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"C:\\Users\\agnet\\IdeaProjects\\JungleQuest\\src\\main\\resources\\universite_paris8\\iut\\dagnetti\\junglequest\\images\\parallax\" />\n      <recent name=\"C:\\Users\\agnet\\IdeaProjects\\JungleQuest\\src\\main\\java\\universite_paris8\\iut\\dagnetti\\junglequest\\vue\" />\n      <recent name=\"C:\\Users\\agnet\\IdeaProjects\\JungleQuest\\src\\main\\resources\\universite_paris8\\iut\\dagnetti\\junglequest\\images\" />\n      <recent name=\"C:\\Users\\agnet\\IdeaProjects\\JungleQuest\\src\\main\\resources\\universite_paris8\\iut\\dagnetti\\junglequest\\maps\" />\n    </key>\n    <key name=\"MoveClassesOrPackagesDialog.RECENTS_KEY\">\n      <recent name=\"universite_paris8\" />\n    </key>\n  </component>\n  <component name=\"RunManager\" selected=\"Application.MenuPrincipal\">\n    <configuration name=\"LanceurJeu\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"universite_paris8.iut.dagnetti.junglequest.controleur.demarrage.LanceurJeu\" />\n      <module name=\"JungleQuest\" />\n      <extension name=\"coverage\">\n        <pattern>\n          <option name=\"PATTERN\" value=\"universite_paris8.iut.dagnetti.junglequest.controleur.demarrage.*\" />\n          <option name=\"ENABLED\" value=\"true\" />\n        </pattern>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"MenuPrincipal\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"universite_paris8.iut.dagnetti.junglequest.vue.fenetre.MenuPrincipal\" />\n      <module name=\"JungleQuest\" />\n      <extension name=\"coverage\">\n        <pattern>\n          <option name=\"PATTERN\" value=\"universite_paris8.iut.dagnetti.junglequest.vue.fenetre.*\" />\n          <option name=\"ENABLED\" value=\"true\" />\n        </pattern>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Application.MenuPrincipal\" />\n        <item itemvalue=\"Application.LanceurJeu\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.227\" />\n        <option value=\"bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.227\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"04ca2a54-06d3-49ed-b803-58534b0974e2\" name=\"Changes\" comment=\"\" />\n      <created>1747396012227</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1747396012227</updated>\n      <workItem from=\"1747396013174\" duration=\"3200000\" />\n      <workItem from=\"1747399498172\" duration=\"6000\" />\n      <workItem from=\"1747399615180\" duration=\"3265000\" />\n      <workItem from=\"1747480141586\" duration=\"25362000\" />\n      <workItem from=\"1747520346225\" duration=\"11547000\" />\n      <workItem from=\"1747593370378\" duration=\"15504000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	
++++ b/.idea/workspace.xml	
+@@ -5,44 +5,14 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="04ca2a54-06d3-49ed-b803-58534b0974e2" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/mvnw" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/mvnw.cmd" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/GestionClavier.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/personnages/Joueur.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/personnages/Personnage.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/Carte/Carte.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/Carte/ChargeurCarte.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/PositionFrame.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/CarteAffichable.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/cartes/jungle_map_calque1.csv" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/menu_principal_forest.png" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/parallax/back.png" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/parallax/far.png" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/parallax/middle.png" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/personnage_sheet.png" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/sprite1.png" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/images/tileset_jungle.png" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons/menu_jungle.mp3" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons/musique_jeu.mp3" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons/musique_jeu2.mp3" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/universite_paris8/iut/dagnetti/junglequest/styles/menu.css" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/ControleurJeu.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/demarrage/LanceurJeu.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/donnees/ConstantesJeu.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/animation/GestionAnimation.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/universite_paris8/iut/dagnetti/junglequest/vue/fenetre/MenuPrincipal.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -57,6 +27,11 @@
+     </option>
+   </component>
+   <component name="Git.Settings">
++    <option name="RECENT_BRANCH_BY_REPOSITORY">
++      <map>
++        <entry key="$PROJECT_DIR$" value="master" />
++      </map>
++    </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
+   <component name="MavenImportPreferences">
+@@ -78,31 +53,31 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "Application.JungleQuestApp.executor": "Run",
+-    "Application.LanceurJeu.executor": "Run",
+-    "Application.MenuPrincipal.executor": "Run",
+-    "Application.TestAffichageJoueur.executor": "Run",
+-    "Application.TestChargementCarte.executor": "Run",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+-    "git-widget-placeholder": "master",
+-    "ignore.virus.scanning.warn.message": "true",
+-    "kotlin-language-version-configured": "true",
+-    "last_opened_file_path": "C:/Users/agnet/IdeaProjects/JungleQuest/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons",
+-    "node.js.detected.package.eslint": "true",
+-    "node.js.detected.package.tslint": "true",
+-    "node.js.selected.package.eslint": "(autodetect)",
+-    "node.js.selected.package.tslint": "(autodetect)",
+-    "nodejs_package_manager_path": "npm",
+-    "project.structure.last.edited": "SDKs",
+-    "project.structure.proportion": "0.15",
+-    "project.structure.side.proportion": "0.2",
+-    "settings.editor.selected.configurable": "preferences.keymap",
+-    "vue.rearranger.settings.migration": "true"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;Application.JungleQuestApp.executor&quot;: &quot;Run&quot;,
++    &quot;Application.LanceurJeu.executor&quot;: &quot;Run&quot;,
++    &quot;Application.MenuPrincipal.executor&quot;: &quot;Run&quot;,
++    &quot;Application.TestAffichageJoueur.executor&quot;: &quot;Run&quot;,
++    &quot;Application.TestChargementCarte.executor&quot;: &quot;Run&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;v2&quot;,
++    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
++    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
++    &quot;last_opened_file_path&quot;: &quot;C:/Users/agnet/IdeaProjects/JungleQuest/src/main/resources/universite_paris8/iut/dagnetti/junglequest/sons&quot;,
++    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
++    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
++    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
++    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
++    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
++    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
++    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
++    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
++    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
++    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
+       <recent name="C:\Users\agnet\IdeaProjects\JungleQuest\src\main\resources\universite_paris8\iut\dagnetti\junglequest\sons" />
+@@ -156,8 +131,8 @@
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.227" />
+-        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.227" />
++        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.17890.1" />
++        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.17890.1" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -175,6 +150,22 @@
+       <workItem from="1747480141586" duration="25362000" />
+       <workItem from="1747520346225" duration="11547000" />
+       <workItem from="1747593370378" duration="15504000" />
++      <workItem from="1747660563402" duration="218000" />
++      <workItem from="1747660787908" duration="3632000" />
++      <workItem from="1747728107374" duration="116000" />
++      <workItem from="1747728333527" duration="1549000" />
++      <workItem from="1747832571293" duration="219000" />
++      <workItem from="1747832795231" duration="661000" />
++      <workItem from="1747834213823" duration="772000" />
++      <workItem from="1747899581009" duration="4467000" />
++      <workItem from="1747906312796" duration="1399000" />
++      <workItem from="1747914729265" duration="283000" />
++      <workItem from="1747915018404" duration="292000" />
++      <workItem from="1747915327870" duration="599000" />
++      <workItem from="1748866328185" duration="104000" />
++      <workItem from="1748951487424" duration="1997000" />
++      <workItem from="1749032088351" duration="1186000" />
++      <workItem from="1749037000859" duration="3015000" />
+     </task>
+     <servers />
+   </component>
+Index: src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package universite_paris8.iut.dagnetti.junglequest.controleur.moteur;\n\nimport universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu;\nimport universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte.Carte;\nimport universite_paris8.iut.dagnetti.junglequest.modele.personnages.Personnage;\n\npublic class MoteurPhysique {\n\n    private static final double EPSILON = 1.0;  // Tolérance d'erreur verticale (en pixels)\n\n    public void mettreAJourPhysique(Personnage personnage, Carte carte, double decalageX) {\n        // Appliquer la gravité uniquement si en l'air\n        personnage.appliquerGravite(ConstantesJeu.GRAVITE, ConstantesJeu.VITESSE_CHUTE_MAX);\n\n        // Coordonnées des pieds\n        double piedX = personnage.getX() + personnage.getSprite().getFitWidth() / 2 + decalageX;\n        double piedY = personnage.getY() + personnage.getSprite().getFitHeight();\n\n        int colonne = (int) (piedX / ConstantesJeu.TAILLE_TUILE);\n        int ligne = (int) (piedY / ConstantesJeu.TAILLE_TUILE);\n\n        if (carte.estSolide(ligne, colonne)) {\n            double ySol = ligne * ConstantesJeu.TAILLE_TUILE;\n\n            if (personnage.getVitesseY() >= 0 && piedY >= ySol - EPSILON) {\n                personnage.poserAuSol(ySol - personnage.getSprite().getFitHeight());\n            }\n        } else {\n            personnage.setEstAuSol(false);\n        }\n\n        personnage.mettreAJourPosition();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java b/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java
+--- a/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java	
++++ b/src/main/java/universite_paris8/iut/dagnetti/junglequest/controleur/moteur/MoteurPhysique.java	
+@@ -6,7 +6,6 @@
+ 
+ public class MoteurPhysique {
+ 
+-    private static final double EPSILON = 1.0;  // Tolérance d'erreur verticale (en pixels)
+ 
+     public void mettreAJourPhysique(Personnage personnage, Carte carte, double decalageX) {
+         // Appliquer la gravité uniquement si en l'air
+@@ -22,7 +21,7 @@
+         if (carte.estSolide(ligne, colonne)) {
+             double ySol = ligne * ConstantesJeu.TAILLE_TUILE;
+ 
+-            if (personnage.getVitesseY() >= 0 && piedY >= ySol - EPSILON) {
++            if (personnage.getVitesseY() >= 0 && piedY >= ySol) {
+                 personnage.poserAuSol(ySol - personnage.getSprite().getFitHeight());
+             }
+         } else {

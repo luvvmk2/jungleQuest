@@ -8,12 +8,16 @@ import javafx.scene.input.MouseButton;
 
 import static universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu.*;
 
-import universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte.Carte;
+import universite_paris8.iut.dagnetti.junglequest.modele.carte.Carte;
 import universite_paris8.iut.dagnetti.junglequest.controleur.moteur.MoteurPhysique;
 import universite_paris8.iut.dagnetti.junglequest.modele.personnages.Joueur;
+import universite_paris8.iut.dagnetti.junglequest.modele.bloc.BlocManager;
+import universite_paris8.iut.dagnetti.junglequest.modele.bloc.TileType;
 import universite_paris8.iut.dagnetti.junglequest.vue.CarteAffichable;
+import universite_paris8.iut.dagnetti.junglequest.vue.VueBackground;
 import universite_paris8.iut.dagnetti.junglequest.vue.animation.GestionAnimation;
 import javafx.scene.image.WritableImage;
+import universite_paris8.iut.dagnetti.junglequest.controleur.interfacefx.InventaireController;
 
 public class ControleurJeu {
 
@@ -23,13 +27,19 @@ public class ControleurJeu {
     private final Joueur joueur;
     private final GestionClavier clavier;
     private final GestionAnimation animation;
+    private final InventaireController inventaireController;
+    private VueBackground vueBackground;
+    private final double largeurEcran;
 
     private int compteurAttaque = 0;
     private int frameMort = 0;
     private int frameSort = 0;
     private double offsetX = 0;
 
-    public ControleurJeu(Scene scene, Carte carte, CarteAffichable carteAffichable, Joueur joueur,
+    /**
+     * Initialise le contrôleur principal du jeu : clavier, animation, logique du joueur et gestion des clics.
+     */
+    public ControleurJeu(Scene scene, Carte carte, CarteAffichable carteAffichable, Joueur joueur, InventaireController inventaireController,
                          WritableImage[] idle, WritableImage[] marche,
                          WritableImage[] attaque,
                          WritableImage[] preparationSaut, WritableImage[] volSaut, WritableImage[] sautReload,
@@ -40,8 +50,11 @@ public class ControleurJeu {
         this.carte = carte;
         this.carteAffichable = carteAffichable;
         this.joueur = joueur;
+        this.inventaireController = inventaireController;
         this.clavier = new GestionClavier(scene);
+        this.largeurEcran = scene.getWidth();
 
+        // Initialisation des animations
         this.animation = new GestionAnimation(
                 idle, marche, attaque,
                 preparationSaut, volSaut, sautReload,
@@ -50,6 +63,7 @@ public class ControleurJeu {
                 sort, accroupi, bouclier
         );
 
+        // Gestion du clic gauche pour attaquer
         scene.setOnMousePressed(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
                 if (!joueur.estEnAttaque()) {
@@ -61,7 +75,12 @@ public class ControleurJeu {
                 }
             }
         });
+        scene.setOnMouseClicked(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                gererClicDroit(e.getX(), e.getY());
+            } });
 
+        // Lancement de la boucle de jeu
         new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -70,7 +89,11 @@ public class ControleurJeu {
         }.start();
     }
 
+    /**
+     * Méthode principale appelée à chaque frame pour gérer les actions du joueur et l'affichage.
+     */
     private void mettreAJour() {
+        // Récupération des touches clavier pressées
         boolean gauche = clavier.estAppuyee(KeyCode.Q) || clavier.estAppuyee(KeyCode.LEFT);
         boolean droite = clavier.estAppuyee(KeyCode.D) || clavier.estAppuyee(KeyCode.RIGHT);
         boolean toucheSaut = clavier.estAppuyee(KeyCode.SPACE);
@@ -82,6 +105,7 @@ public class ControleurJeu {
         boolean touchePreparationSaut = clavier.estAppuyee(KeyCode.DIGIT3);
         boolean toucheAtterrissage = clavier.estAppuyee(KeyCode.DIGIT4);
 
+        // Déplacement horizontal
         if (gauche) {
             joueur.deplacerGauche(VITESSE_JOUEUR);
         } else if (droite) {
@@ -90,16 +114,28 @@ public class ControleurJeu {
             joueur.arreter();
         }
 
+        // Saut
         if (toucheSaut && joueur.estAuSol()) {
             joueur.sauter(IMPULSION_SAUT);
         }
 
-        moteur.mettreAJourPhysique(joueur, carte, offsetX);
-        offsetX = joueur.getX() - 640;
+        moteur.mettreAJourPhysique(joueur, carte);
+        offsetX = joueur.getX() - largeurEcran / 2;
         if (offsetX < 0) offsetX = 0;
+        double maxOffset = carte.getLargeur() * TAILLE_TUILE -largeurEcran;
+        if(offsetX > maxOffset)
+            offsetX = maxOffset;
+
+        // Redessiner la carte avec le nouveau décalage
         carteAffichable.redessiner(offsetX);
 
-        // --- ANIMATION ---
+        // Redessiner le fond si présent
+        if (vueBackground != null) {
+            vueBackground.mettreAJourScroll(offsetX);
+        }
+        joueur.getSprite().setX(joueur.getX() - offsetX);
+
+        // Gestion des animations
         ImageView sprite = joueur.getSprite();
 
         if (toucheDegats) {
@@ -130,6 +166,45 @@ public class ControleurJeu {
             animation.animerIdle(sprite, DELAI_FRAME);
         }
 
+        // Inversion du sprite si le joueur regarde à gauche
         sprite.setScaleX(joueur.estVersGauche() ? -1 : 1);
+    }
+
+    /**
+     * Permet de lier dynamiquement la vue du fond à ce contrôleur.
+     */
+    public void setVueBackground(VueBackground vueBackground) {
+        this.vueBackground = vueBackground;
+    }
+
+    private void gererClicDroit(double xScene, double yScene) {
+        int colonne = (int) ((xScene + offsetX) / TAILLE_TUILE);
+        int ligne = (int) (yScene / TAILLE_TUILE);
+
+        if (colonne < 0 || colonne >= carte.getLargeur() || ligne < 0 || ligne >= carte.getHauteur()) {
+            return;
+        }
+
+        String selection = inventaireController != null ? inventaireController.getItemSelectionne() : null;
+
+        if (selection != null) {
+            if (joueur.getInventaire().retirerItem(selection, 1)) {
+                carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
+            }
+            if (inventaireController != null) {
+                inventaireController.deselectionner();
+                inventaireController.rafraichir();
+            }
+        } else {
+            int idAvant = carte.getValeurTuile(ligne, colonne);
+            if (BlocManager.casserBloc(carte, ligne, colonne) && idAvant != Carte.TUILE_VIDE) {
+                joueur.getInventaire().ajouterItem("Bois", 1);
+                if (inventaireController != null) {
+                    inventaireController.rafraichir();
+                }
+            }
+        }
+
+        carteAffichable.redessiner(offsetX);
     }
 }

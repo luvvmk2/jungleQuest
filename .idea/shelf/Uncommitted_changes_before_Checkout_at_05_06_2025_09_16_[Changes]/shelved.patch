@@ -1,0 +1,117 @@
+Index: src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package universite_paris8.iut.dagnetti.junglequest.modele.utilitaire;\n\nimport javafx.scene.image.Image;\nimport javafx.scene.image.PixelReader;\nimport javafx.scene.image.WritableImage;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class ExtracteurSprites {\n    private static final int TAILLE_FRAME = 56;\n\n    public static WritableImage[] extraire(Image spriteSheet, List<PositionFrame> frames) {\n        WritableImage[] resultats = new WritableImage[frames.size()];\n        PixelReader lecteur = spriteSheet.getPixelReader();\n\n        for (int i = 0; i < frames.size(); i++) {\n            PositionFrame f = frames.get(i);\n            int x = f.colonne() * TAILLE_FRAME;\n            int y = f.ligne() * TAILLE_FRAME;\n            resultats[i] = new WritableImage(lecteur, x, y, TAILLE_FRAME, TAILLE_FRAME);\n        }\n\n        return resultats;\n    }\n\n    public static WritableImage[] idle(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(0, 0, 5));\n    }\n\n    public static WritableImage[] attaque(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(0, 1, 7));\n    }\n\n    public static WritableImage[] marche(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(0, 2, 7));\n    }\n\n    public static WritableImage[] preparationSaut(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(0, 3, 1));\n    }\n\n    public static WritableImage[] volSaut(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(2, 3, 5));\n    }\n\n    public static WritableImage[] sautReload(Image spriteSheet) {\n        List<PositionFrame> frames = new ArrayList<>();\n        frames.add(new PositionFrame(6, 3));\n        frames.add(new PositionFrame(7, 3));\n        frames.add(new PositionFrame(0, 4));\n        return extraire(spriteSheet, frames);\n    }\n\n    public static WritableImage[] chute(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(1, 4, 4));\n    }\n\n    public static WritableImage[] atterrissage(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(5, 4, 7));\n    }\n\n    public static WritableImage[] degats(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(0, 6, 3));\n    }\n\n    public static WritableImage[] mort(Image spriteSheet) {\n        List<PositionFrame> frames = new ArrayList<>();\n        for (int i = 0; i <= 7; i++) frames.add(new PositionFrame(i, 6));\n        for (int i = 0; i <= 3; i++) frames.add(new PositionFrame(i, 7));\n        return extraire(spriteSheet, frames);\n    }\n\n    public static WritableImage[] sort(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(0, 8, 7));\n    }\n\n    public static WritableImage[] accroupi(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(0, 9, 2));\n    }\n\n    public static WritableImage[] bouclier(Image spriteSheet) {\n        return extraire(spriteSheet, frameRange(0, 10, 2));\n    }\n\n    private static List<PositionFrame> frameRange(int debutCol, int ligne, int finCol) {\n        List<PositionFrame> frames = new ArrayList<>();\n        for (int i = debutCol; i <= finCol; i++) {\n            frames.add(new PositionFrame(i, ligne));\n        }\n        return frames;\n    }\n}\n
+===================================================================
+diff --git a/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java b/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java
+--- a/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java	
++++ b/src/main/java/universite_paris8/iut/dagnetti/junglequest/modele/utilitaire/ExtracteurSprites.java	
+@@ -10,77 +10,77 @@
+ public class ExtracteurSprites {
+     private static final int TAILLE_FRAME = 56;
+ 
+-    public static WritableImage[] extraire(Image spriteSheet, List<PositionFrame> frames) {
++    public static WritableImage[] extraire(Image personnage, List<PositionFrame> frames) {
+         WritableImage[] resultats = new WritableImage[frames.size()];
+-        PixelReader lecteur = spriteSheet.getPixelReader();
++        PixelReader lecteur = personnage.getPixelReader();
+ 
+         for (int i = 0; i < frames.size(); i++) {
+-            PositionFrame f = frames.get(i);
+-            int x = f.colonne() * TAILLE_FRAME;
+-            int y = f.ligne() * TAILLE_FRAME;
++            PositionFrame frame = frames.get(i);
++            int x = frame.colonne() * TAILLE_FRAME;
++            int y = frame.ligne() * TAILLE_FRAME;
+             resultats[i] = new WritableImage(lecteur, x, y, TAILLE_FRAME, TAILLE_FRAME);
+         }
+ 
+         return resultats;
+     }
+ 
+-    public static WritableImage[] idle(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(0, 0, 5));
++    public static WritableImage[] idle(Image personnage) {
++        return extraire(personnage, frameRange(0, 0, 5));
+     }
+ 
+-    public static WritableImage[] attaque(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(0, 1, 7));
++    public static WritableImage[] attaque(Image personnage) {
++        return extraire(personnage, frameRange(0, 1, 7));
+     }
+ 
+-    public static WritableImage[] marche(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(0, 2, 7));
++    public static WritableImage[] marche(Image personnage) {
++        return extraire(personnage, frameRange(0, 2, 7));
+     }
+ 
+-    public static WritableImage[] preparationSaut(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(0, 3, 1));
++    public static WritableImage[] preparationSaut(Image personnage) {
++        return extraire(personnage, frameRange(0, 3, 1));
+     }
+ 
+-    public static WritableImage[] volSaut(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(2, 3, 5));
++    public static WritableImage[] volSaut(Image personnage) {
++        return extraire(personnage, frameRange(2, 3, 5));
+     }
+ 
+-    public static WritableImage[] sautReload(Image spriteSheet) {
++    public static WritableImage[] sautReload(Image personnage) {
+         List<PositionFrame> frames = new ArrayList<>();
+         frames.add(new PositionFrame(6, 3));
+         frames.add(new PositionFrame(7, 3));
+         frames.add(new PositionFrame(0, 4));
+-        return extraire(spriteSheet, frames);
++        return extraire(personnage, frames);
+     }
+ 
+-    public static WritableImage[] chute(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(1, 4, 4));
++    public static WritableImage[] chute(Image personnage) {
++        return extraire(personnage, frameRange(1, 4, 4));
+     }
+ 
+-    public static WritableImage[] atterrissage(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(5, 4, 7));
++    public static WritableImage[] atterrissage(Image personnage) {
++        return extraire(personnage, frameRange(5, 4, 7));
+     }
+ 
+-    public static WritableImage[] degats(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(0, 6, 3));
++    public static WritableImage[] degats(Image personnage) {
++        return extraire(personnage, frameRange(0, 6, 3));
+     }
+ 
+-    public static WritableImage[] mort(Image spriteSheet) {
++    public static WritableImage[] mort(Image personnage) {
+         List<PositionFrame> frames = new ArrayList<>();
+         for (int i = 0; i <= 7; i++) frames.add(new PositionFrame(i, 6));
+         for (int i = 0; i <= 3; i++) frames.add(new PositionFrame(i, 7));
+-        return extraire(spriteSheet, frames);
++        return extraire(personnage, frames);
+     }
+ 
+-    public static WritableImage[] sort(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(0, 8, 7));
++    public static WritableImage[] sort(Image personnage) {
++        return extraire(personnage, frameRange(0, 8, 7));
+     }
+ 
+-    public static WritableImage[] accroupi(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(0, 9, 2));
++    public static WritableImage[] accroupi(Image personnage) {
++        return extraire(personnage, frameRange(0, 9, 2));
+     }
+ 
+-    public static WritableImage[] bouclier(Image spriteSheet) {
+-        return extraire(spriteSheet, frameRange(0, 10, 2));
++    public static WritableImage[] bouclier(Image personnage) {
++        return extraire(personnage, frameRange(0, 10, 2));
+     }
+ 
+     private static List<PositionFrame> frameRange(int debutCol, int ligne, int finCol) {

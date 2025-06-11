@@ -1,4 +1,4 @@
-package universite_paris8.iut.dagnetti.junglequest.modele.utilitaire.Carte;
+package universite_paris8.iut.dagnetti.junglequest.modele.carte;
 
 public class Carte {
 
@@ -22,11 +22,22 @@ public class Carte {
         return largeur;
     }
 
+
     public int getValeurTuile(int ligne, int colonne) {
         if (ligne < 0 || ligne >= hauteur || colonne < 0 || colonne >= largeur) {
             return TUILE_VIDE;
         }
         return grille[ligne][colonne];
+    }
+
+    /**
+     * Modifie la valeur d'une tuile de la carte si les coordonées sont valides.
+     */
+    public void setValeurTuile(int ligne, int colonne, int valeur){
+        if (ligne < 0 || ligne >= hauteur || colonne < 0 || colonne >= largeur){
+            return;
+        }
+        grille[ligne][colonne] = valeur;
     }
 
     public boolean estSolide(int ligne, int colonne) {
@@ -55,7 +66,7 @@ public class Carte {
     /**
      * Retourne l'identifiant de la tuile à l'endroit donné.
      */
-    public int getIdTuile(int ligne, int colonne) {
-        return getValeurTuile(ligne, colonne);
-    }
+public int getIdTuile(int ligne, int colonne) {
+return getValeurTuile(ligne, colonne);
+}
 }
