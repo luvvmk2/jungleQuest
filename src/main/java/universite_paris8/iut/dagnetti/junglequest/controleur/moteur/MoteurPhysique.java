@@ -15,20 +15,19 @@ public class MoteurPhysique {
      *
      * @param personnage Le personnage à mettre à jour (ex. Joueur, Ennemi, etc.)
      * @param carte      La carte contenant les tuiles solides
-     * @param decalageX  Le décalage horizontal actuel lié au scrolling
      */
-    public void mettreAJourPhysique(Personnage personnage, Carte carte, double decalageX) {
-        // 🔽 Appliquer la gravité uniquement si le personnage est en l'air
+    public void mettreAJourPhysique(Personnage personnage, Carte carte) {
+        //  Appliquer la gravité uniquement si le personnage est en l'air
         personnage.appliquerGravite(ConstantesJeu.GRAVITE, ConstantesJeu.VITESSE_CHUTE_MAX);
 
-        // 📍 Coordonnées des pieds du personnage (centre bas du sprite)
-        double piedX = personnage.getX() + personnage.getSprite().getFitWidth() / 2 + decalageX;
+        //  Coordonnées des pieds du personnage (centre bas du sprite)
+        double piedX = personnage.getX() + personnage.getSprite().getFitWidth() / 2;
         double piedY = personnage.getY() + personnage.getSprite().getFitHeight();
 
         int colonne = (int) (piedX / ConstantesJeu.TAILLE_TUILE);
         int ligne = (int) (piedY / ConstantesJeu.TAILLE_TUILE);
 
-        // 🧱 Vérifier si le sol est solide sous les pieds
+        // Vérifier si le sol est solide sous les pieds
         if (carte.estSolide(ligne, colonne)) {
             double ySol = ligne * ConstantesJeu.TAILLE_TUILE;
 
@@ -36,15 +35,15 @@ public class MoteurPhysique {
             if (personnage.getVitesseY() >= 0 && piedY >= ySol) {
                 personnage.poserAuSol(ySol - personnage.getSprite().getFitHeight());
 
-               //System.out.println("✅ Collision au sol détectée → personnage posé à y=" + personnage.getY());
+                //System.out.println("Collision au sol détectée → personnage posé à y=" + personnage.getY());
             }
         } else {
             // Aucun sol détecté
             personnage.setEstAuSol(false);
-            //System.out.println("🌪 Personnage en l'air, gravité appliquée. y=" + personnage.getY() + ", vY=" + personnage.getVitesseY());
+            //System.out.println("Personnage en l'air, gravité appliquée. y=" + personnage.getY() + ", vY=" + personnage.getVitesseY());
         }
 
-        // 🔄 Mise à jour finale de la position
+        // Mise à jour finale de la position
         personnage.mettreAJourPosition();
     }
 }

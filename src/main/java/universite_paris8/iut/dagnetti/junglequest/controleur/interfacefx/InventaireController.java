@@ -18,8 +18,8 @@ public class InventaireController implements Initializable {
 
     @FXML
     private HBox slotBar;
-
     private Inventaire inventaire;
+    private String itemSelectionne;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -27,9 +27,9 @@ public class InventaireController implements Initializable {
             slotBar.getStylesheets().add(getClass().getResource(
                     "/universite_paris8/iut/dagnetti/junglequest/styles/inventaire.css"
             ).toExternalForm());
-            System.out.println("✅ Feuille de style de l’inventaire chargée.");
+            System.out.println("Feuille de style de l’inventaire chargée.");
         } catch (Exception e) {
-            System.err.println("❌ Erreur lors du chargement du CSS de l’inventaire.");
+            System.err.println("Erreur lors du chargement du CSS de l’inventaire.");
         }
     }
 
@@ -40,12 +40,13 @@ public class InventaireController implements Initializable {
         this.inventaire = inventaire;
 
         if (inventaire == null) {
-            System.err.println("❌ Inventaire non initialisé (null).");
+            System.err.println("Inventaire non initialisé (null).");
             return;
         }
 
         afficherSlots();
-        System.out.println("📦 Inventaire appliqué au contrôleur. Contenu : " + inventaire.getItems().size() + " item(s).");
+        itemSelectionne = null;
+        System.out.println("Inventaire appliqué au contrôleur. Contenu : " + inventaire.getItems().size() + " item(s).");
     }
 
     /**
@@ -80,7 +81,7 @@ public class InventaireController implements Initializable {
         StackPane slot = new StackPane();
         slot.getStyleClass().add("slot-rempli");
 
-        // 📷 Chargement de l’image de l’objet
+        // Chargement de l’image de l’objet
         String cheminImage = "/universite_paris8/iut/dagnetti/junglequest/images/items/" + nom.toLowerCase() + ".png";
         ImageView icone = null;
 
@@ -90,10 +91,10 @@ public class InventaireController implements Initializable {
             icone.setFitWidth(24);
             icone.setFitHeight(24);
         } catch (Exception e) {
-            System.err.println("⚠️ Icône introuvable : \"" + nom + "\" → Attendu à : " + cheminImage);
+            System.err.println("Icône introuvable : \"" + nom + "\" → Attendu à : " + cheminImage);
         }
 
-        // 🔢 Quantité
+        // Quantité
         Label label = new Label("x" + quantite);
         label.getStyleClass().add("label-item");
         StackPane.setAlignment(label, Pos.BOTTOM_RIGHT);
@@ -107,6 +108,9 @@ public class InventaireController implements Initializable {
         }
 
         slot.getChildren().add(label);
+
+        //sélection d'un item pour le placement
+        slot.setOnMouseClicked(e -> itemSelectionne = nom);
         return slot;
     }
 
@@ -117,5 +121,19 @@ public class InventaireController implements Initializable {
         StackPane empty = new StackPane();
         empty.getStyleClass().add("slot-vide");
         return empty;
+    }
+    /**Rafraichit l'affichage a partir des donnée de l'inventaire */
+    public void rafraichir(){
+        if (inventaire != null){
+            afficherSlots();
+        }
+    }
+    /**Retourne l'item actuellement séléctionné pour le placement */
+    public String getItemSelectionne(){
+        return itemSelectionne;
+    }
+    /**réinitialise la séléction d'item */
+    public void deselectionner(){
+        itemSelectionne = null;
     }
 }

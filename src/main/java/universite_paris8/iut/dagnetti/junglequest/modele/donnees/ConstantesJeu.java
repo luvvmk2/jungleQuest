@@ -24,7 +24,7 @@ public final class ConstantesJeu {
     public static final double GRAVITE = 0.5;
 
     /** Vitesse verticale maximale en chute libre */
-    public static final double VITESSE_CHUTE_MAX = 5;
+    public static final double VITESSE_CHUTE_MAX = 2;
 
     /** Force de l’impulsion de saut du joueur */
     public static final double IMPULSION_SAUT = 10;

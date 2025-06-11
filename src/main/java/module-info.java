@@ -2,6 +2,7 @@ module universite_paris8.iut.dagnetti.junglequest {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.media;
+    requires javafx.graphics;
     exports universite_paris8.iut.dagnetti.junglequest.vue.fenetre;
     exports universite_paris8.iut.dagnetti.junglequest.controleur.demarrage;
     exports universite_paris8.iut.dagnetti.junglequest.controleur;
