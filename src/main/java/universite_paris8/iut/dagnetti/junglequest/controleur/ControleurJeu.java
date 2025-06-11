@@ -88,15 +88,13 @@ public class ControleurJeu {
                 gererClicDroit(e.getX(), e.getY());
             } });
 
-        // Appuyer sur 'P' permet d'ouvrir ou de fermer la fenêtre des paramètres
-        // du jeu. L'événement est écouté directement sur la scène afin de ne pas
-        // interférer avec la gestion classique du clavier.
+        // Appuyer sur 'P' permet d'afficher ou de masquer l'inventaire. L'événement
+        // est écouté directement sur la scène afin de ne pas interférer avec la
+        // gestion classique du clavier.
         scene.addEventHandler(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.P) {
-                if (fenetreParametres == null) {
-                    ouvrirParametres(scene);
-                } else {
-                    fenetreParametres.close();
+                if (inventaireController != null) {
+                    inventaireController.basculerAffichage();
                 }
             } else if (e.getCode() == KeyCode.ENTER) {
                 enPause = !enPause;
