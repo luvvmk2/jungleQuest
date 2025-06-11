@@ -98,6 +98,8 @@ public class ControleurJeu {
                 } else {
                     fenetreParametres.close();
                 }
+            } else if (e.getCode() == KeyCode.ENTER) {
+                enPause = !enPause;
             }
         });
 
