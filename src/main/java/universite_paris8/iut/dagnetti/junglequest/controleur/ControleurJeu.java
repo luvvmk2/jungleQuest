@@ -43,6 +43,8 @@ public class ControleurJeu {
     private int frameSort = 0;
     private double offsetX = 0;
 
+    private boolean joueurMort = false;
+
     private boolean enPause = false;
     private Stage fenetreParametres;
 
@@ -130,7 +132,7 @@ public class ControleurJeu {
         boolean toucheSaut = clavier.estAppuyee(KeyCode.SPACE);
         boolean toucheAccroupi = clavier.estAppuyee(KeyCode.CONTROL);
         boolean toucheBouclier = clavier.estAppuyee(KeyCode.SHIFT);
-        boolean toucheDegats = clavier.estAppuyee(KeyCode.DIGIT1);
+        boolean toucheDegats = clavier.estAppuyee(KeyCode.M);
         boolean toucheMort = clavier.estAppuyee(KeyCode.DIGIT2);
         boolean toucheSort = clavier.estAppuyee(KeyCode.E);
         boolean touchePreparationSaut = clavier.estAppuyee(KeyCode.DIGIT3);
@@ -140,17 +142,29 @@ public class ControleurJeu {
             joueur.subirDegats(1);
         }
 
+        if (joueur.getPointsDeVie() <= 0) {
+            joueurMort = true;
+        }
+
+        if (toucheMort) {
+            joueurMort = true;
+        }
+
         // Déplacement horizontal
-        if (gauche) {
-            joueur.deplacerGauche(VITESSE_JOUEUR);
-        } else if (droite) {
-            joueur.deplacerDroite(VITESSE_JOUEUR);
+        if (!joueurMort) {
+            if (gauche) {
+                joueur.deplacerGauche(VITESSE_JOUEUR);
+            } else if (droite) {
+                joueur.deplacerDroite(VITESSE_JOUEUR);
+            } else {
+                joueur.arreter();
+            }
         } else {
             joueur.arreter();
         }
 
         // Saut
-        if (toucheSaut && joueur.estAuSol()) {
+        if (!joueurMort && toucheSaut && joueur.estAuSol()) {
             joueur.sauter(IMPULSION_SAUT);
         }
 
@@ -176,11 +190,13 @@ public class ControleurJeu {
         // Gestion des animations
         ImageView sprite = joueur.getSprite();
 
-        if (toucheDegats) {
-            animation.animerDegats(sprite);
-        } else if (toucheMort) {
+        if (joueurMort) {
             animation.animerMort(sprite, frameMort++);
-            if (frameMort >= 12) frameMort = 0;
+            if (frameMort >= 12) frameMort = 11;
+            sprite.setScaleX(joueur.estVersGauche() ? -1 : 1);
+            return;
+        } else if (toucheDegats) {
+            animation.animerDegats(sprite);
         } else if (toucheSort) {
             animation.animerSort(sprite, frameSort++);
             if (frameSort >= 8) frameSort = 0;
