@@ -16,6 +16,9 @@ public final class ConstantesJeu {
     /** Largeur du joueur (en pixels, utilisée pour le centrage) */
     public static final int LARGEUR_JOUEUR = 56;
 
+    /** Quantité maximale de points de vie du joueur */
+    public static final int VIE_MAX_JOUEUR = 100;
+
     // --- Mouvements et physique ---
     /** Vitesse horizontale du joueur (modifiable via le menu de paramètres) */
     public static int VITESSE_JOUEUR = 1;
