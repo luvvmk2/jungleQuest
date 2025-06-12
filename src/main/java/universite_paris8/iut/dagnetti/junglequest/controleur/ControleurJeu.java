@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.control.ProgressBar;
 
 import static universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu.*;
 
@@ -33,6 +34,7 @@ public class ControleurJeu {
     private final GestionClavier clavier;
     private final GestionAnimation animation;
     private final InventaireController inventaireController;
+    private final ProgressBar barreVie;
     private VueBackground vueBackground;
     private final double largeurEcran;
 
@@ -47,7 +49,7 @@ public class ControleurJeu {
     /**
      * Initialise le contrôleur principal du jeu : clavier, animation, logique du joueur et gestion des clics.
      */
-    public ControleurJeu(Scene scene, Carte carte, CarteAffichable carteAffichable, Joueur joueur, InventaireController inventaireController,
+    public ControleurJeu(Scene scene, Carte carte, CarteAffichable carteAffichable, Joueur joueur, InventaireController inventaireController, ProgressBar barreVie,
                          WritableImage[] idle, WritableImage[] marche,
                          WritableImage[] attaque,
                          WritableImage[] preparationSaut, WritableImage[] volSaut, WritableImage[] sautReload,
@@ -59,6 +61,7 @@ public class ControleurJeu {
         this.carteAffichable = carteAffichable;
         this.joueur = joueur;
         this.inventaireController = inventaireController;
+        this.barreVie = barreVie;
         this.clavier = new GestionClavier(scene);
         this.largeurEcran = scene.getWidth();
 
@@ -133,6 +136,10 @@ public class ControleurJeu {
         boolean touchePreparationSaut = clavier.estAppuyee(KeyCode.DIGIT3);
         boolean toucheAtterrissage = clavier.estAppuyee(KeyCode.DIGIT4);
 
+        if (toucheDegats) {
+            joueur.subirDegats(1);
+        }
+
         // Déplacement horizontal
         if (gauche) {
             joueur.deplacerGauche(VITESSE_JOUEUR);
@@ -162,6 +169,9 @@ public class ControleurJeu {
             vueBackground.mettreAJourScroll(offsetX);
         }
         joueur.getSprite().setX(joueur.getX() - offsetX);
+        barreVie.setLayoutX(joueur.getX() - offsetX);
+        barreVie.setLayoutY(joueur.getY() - 10);
+        barreVie.setProgress(joueur.getPointsDeVie() / (double) VIE_MAX_JOUEUR);
 
         // Gestion des animations
         ImageView sprite = joueur.getSprite();

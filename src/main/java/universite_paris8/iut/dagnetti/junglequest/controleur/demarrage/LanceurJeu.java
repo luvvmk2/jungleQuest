@@ -97,9 +97,15 @@ public class LanceurJeu extends Application {
 
             Joueur joueur = new Joueur(spriteJoueur, xInitial, yInitial);
             racine.getChildren().addAll(carteAffichable, spriteJoueur);
+            javafx.scene.control.ProgressBar barreVie = new javafx.scene.control.ProgressBar(1.0);
+            barreVie.setPrefWidth(ConstantesJeu.TAILLE_SPRITE);
+            barreVie.setPrefHeight(6);
+            barreVie.setStyle("-fx-accent: #e74c3c;");
+            barreVie.setViewOrder(-9);
+            racine.getChildren().add(barreVie);
             InventaireController inventaireCtrl = afficherInventaire(racine, joueur, largeur, hauteur);
 
-            ControleurJeu controleurJeu = new ControleurJeu(scene, carte, carteAffichable, joueur, inventaireCtrl,
+            ControleurJeu controleurJeu = new ControleurJeu(scene, carte, carteAffichable, joueur, inventaireCtrl, barreVie,
                     idle, marche, attaque, preparationSaut, volSaut, sautReload,
                     chute, atterrissage, degats, mort, sort, accroupi, bouclier);
 
