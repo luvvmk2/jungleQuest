@@ -67,7 +67,7 @@ public class Carte {
     /**
      * Retourne l'identifiant de la tuile à l'endroit donné.
      */
-public int getIdTuile(int ligne, int colonne) {
-return getValeurTuile(ligne, colonne);
-}
+    public int getIdTuile(int ligne, int colonne) {
+        return getValeurTuile(ligne, colonne);
+    }
 }
