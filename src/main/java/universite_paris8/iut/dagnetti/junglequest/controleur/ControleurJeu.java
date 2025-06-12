@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.paint.Color;
 
 import static universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu.*;
 
@@ -185,7 +186,15 @@ public class ControleurJeu {
         joueur.getSprite().setX(joueur.getX() - offsetX);
         barreVie.setLayoutX(joueur.getX() - offsetX);
         barreVie.setLayoutY(joueur.getY() - 10);
-        barreVie.setProgress(joueur.getPointsDeVie() / (double) VIE_MAX_JOUEUR);
+        double ratioVie = joueur.getPointsDeVie() / (double) VIE_MAX_JOUEUR;
+        barreVie.setProgress(ratioVie);
+        // La couleur passe du vert au rouge en fonction de la vie restante
+        Color couleurVie = Color.GREEN.interpolate(Color.RED, 1 - ratioVie);
+        String hex = String.format("#%02X%02X%02X",
+                (int) (couleurVie.getRed() * 255),
+                (int) (couleurVie.getGreen() * 255),
+                (int) (couleurVie.getBlue() * 255));
+        barreVie.setStyle("-fx-accent: " + hex + ";");
 
         // Gestion des animations
         ImageView sprite = joueur.getSprite();
