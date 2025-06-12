@@ -42,7 +42,14 @@ public class LanceurJeu extends Application {
         double largeur = ecran.getWidth();
         double hauteur = ecran.getHeight();
 
-        Pane racine = new Pane();
+        Pane racine;
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/universite_paris8/iut/dagnetti/junglequest/vue/VueJeu.fxml"));
+            racine = loader.load();
+        } catch (IOException e) {
+            racine = new Pane();
+        }
         Scene scene = new Scene(racine, largeur, hauteur);
 
         try {

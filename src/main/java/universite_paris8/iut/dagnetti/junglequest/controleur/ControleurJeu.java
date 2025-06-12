@@ -93,6 +93,10 @@ public class ControleurJeu {
         // gestion classique du clavier.
         scene.addEventHandler(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.P) {
+                if (fenetreParametres == null) {
+                    ouvrirParametres(scene);
+                }
+            } else if (e.getCode() == KeyCode.I) {
                 if (inventaireController != null) {
                     inventaireController.basculerAffichage();
                 }
@@ -212,8 +216,14 @@ public class ControleurJeu {
             String selection = inventaireController != null ? inventaireController.getItemSelectionne() : null;
 
             if (selection != null) {
-                if (joueur.getInventaire().retirerItem(selection, 1)) {
-                    carte.setValeurTuile(ligne, colonne, TileType.VIDE.getId());
+                TileType type = switch (selection.toLowerCase()) {
+                    case "bois" -> TileType.ARBRE;
+                    case "terre" -> TileType.TERRE;
+                    case "herbe" -> TileType.HERBE;
+                    default -> null;
+                };
+                if (type != null && joueur.getInventaire().retirerItem(selection, 1)) {
+                    carte.setValeurTuile(ligne, colonne, type.getId());
                 }
                 if (inventaireController != null) {
                     inventaireController.deselectionner();
