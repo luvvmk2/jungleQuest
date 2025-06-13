@@ -22,7 +22,8 @@ public class MoteurPhysiqueTest {
         sprite.setFitHeight(32);
         Joueur joueur = new Joueur(sprite, 0, 0);
         MoteurPhysique moteur = new MoteurPhysique();
-        moteur.mettreAJourPhysique(joueur, carte);
+        boolean atterri = moteur.mettreAJourPhysique(joueur, carte);
+        assertTrue(atterri);
         assertTrue(joueur.estAuSol());
         assertEquals(0, joueur.getY());
     }
@@ -36,7 +37,8 @@ public class MoteurPhysiqueTest {
         sprite.setFitHeight(32);
         Joueur joueur = new Joueur(sprite, 0, 0);
         MoteurPhysique moteur = new MoteurPhysique();
-        moteur.mettreAJourPhysique(joueur, carte);
+        boolean atterri = moteur.mettreAJourPhysique(joueur, carte);
+        assertFalse(atterri);
         assertFalse(joueur.estAuSol());
         assertTrue(joueur.getY() > 0);
     }

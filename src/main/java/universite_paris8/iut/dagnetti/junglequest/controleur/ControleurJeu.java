@@ -174,7 +174,7 @@ public class ControleurJeu {
             joueur.sauter(IMPULSION_SAUT);
         }
 
-        moteur.mettreAJourPhysique(joueur, carte);
+        boolean aAtterri = moteur.mettreAJourPhysique(joueur, carte);
         offsetX = joueur.getX() - largeurEcran / 2;
         if (offsetX < 0) offsetX = 0;
         double maxOffset = carte.getLargeur() * TAILLE_TUILE -largeurEcran;
@@ -216,6 +216,8 @@ public class ControleurJeu {
             compteurAttaque++;
         } else if (!joueur.estAuSol()) {
             animation.animerSaut(sprite, joueur.getVitesseY());
+        } else if (aAtterri) {
+            animation.animerAtterrissage(sprite);
         } else if (toucheAccroupi) {
             animation.animerAccroupi(sprite);
         } else if (toucheBouclier) {

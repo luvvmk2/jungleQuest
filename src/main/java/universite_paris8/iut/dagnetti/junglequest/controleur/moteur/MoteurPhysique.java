@@ -12,12 +12,14 @@ import universite_paris8.iut.dagnetti.junglequest.modele.bloc.TileType;
 public class MoteurPhysique {
 
     /**
-     * Applique la physique à un personnage : chute, collisions, position.
+     * Met à jour la physique d'un personnage et indique s'il vient d'atterrir.
      *
-     * @param personnage Le personnage à mettre à jour (ex. Joueur, Ennemi, etc.)
-     * @param carte      La carte contenant les tuiles solides
+     * @param personnage le personnage à mettre à jour
+     * @param carte      la carte pour les collisions
+     * @return {@code true} si le personnage vient d'atterrir lors de cette mise
+     *         à jour
      */
-    public void mettreAJourPhysique(Personnage personnage, Carte carte) {
+    public boolean mettreAJourPhysique(Personnage personnage, Carte carte) {
         // Appliquer la gravité
         personnage.appliquerGravite(ConstantesJeu.GRAVITE, ConstantesJeu.VITESSE_CHUTE_MAX);
 
@@ -55,7 +57,8 @@ public class MoteurPhysique {
         personnage.setX(newX);
 
         // --- Gestion des collisions verticales ---
-        personnage.setEstAuSol(false);
+        boolean auSolAvant = personnage.estAuSol();
+        boolean auSolApres = false;
         if (personnage.getVitesseY() > 0) { // chute
             int ligneBas = (int) ((newY + hauteur - 1) / ConstantesJeu.TAILLE_TUILE);
             int colGauche = (int) (newX / ConstantesJeu.TAILLE_TUILE);
@@ -65,7 +68,7 @@ public class MoteurPhysique {
                 if (carte.estSolide(ligneBas, c) && TileType.fromId(id) != TileType.ARBRE) {
                     newY = ligneBas * ConstantesJeu.TAILLE_TUILE - hauteur;
                     personnage.setVitesseY(0);
-                    personnage.setEstAuSol(true);
+                    auSolApres = true;
                     break;
                 }
             }
@@ -81,8 +84,20 @@ public class MoteurPhysique {
                     break;
                 }
             }
+        } else {
+            int ligneBas = (int) ((newY + hauteur - 1) / ConstantesJeu.TAILLE_TUILE);
+            int colGauche = (int) (newX / ConstantesJeu.TAILLE_TUILE);
+            int colDroite = (int) ((newX + largeur - 1) / ConstantesJeu.TAILLE_TUILE);
+            for (int c = colGauche; c <= colDroite; c++) {
+                int id = carte.getValeurTuile(ligneBas, c);
+                if (carte.estSolide(ligneBas, c) && TileType.fromId(id) != TileType.ARBRE) {
+                    auSolApres = true;
+                    break;
+                }
+            }
         }
-
         personnage.setY(newY);
+        personnage.setEstAuSol(auSolApres);
+        return !auSolAvant && auSolApres;
     }
 }
