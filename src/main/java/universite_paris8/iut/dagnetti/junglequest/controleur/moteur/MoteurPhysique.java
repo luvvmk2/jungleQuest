@@ -3,6 +3,7 @@ package universite_paris8.iut.dagnetti.junglequest.controleur.moteur;
 import universite_paris8.iut.dagnetti.junglequest.modele.donnees.ConstantesJeu;
 import universite_paris8.iut.dagnetti.junglequest.modele.carte.Carte;
 import universite_paris8.iut.dagnetti.junglequest.modele.personnages.Personnage;
+import universite_paris8.iut.dagnetti.junglequest.modele.bloc.TileType;
 
 /**
  * Gère les règles physiques élémentaires du jeu :
@@ -11,39 +12,92 @@ import universite_paris8.iut.dagnetti.junglequest.modele.personnages.Personnage;
 public class MoteurPhysique {
 
     /**
-     * Applique la physique à un personnage : chute, collisions, position.
+     * Met à jour la physique d'un personnage et indique s'il vient d'atterrir.
      *
-     * @param personnage Le personnage à mettre à jour (ex. Joueur, Ennemi, etc.)
-     * @param carte      La carte contenant les tuiles solides
+     * @param personnage le personnage à mettre à jour
+     * @param carte      la carte pour les collisions
+     * @return {@code true} si le personnage vient d'atterrir lors de cette mise
+     *         à jour
      */
-    public void mettreAJourPhysique(Personnage personnage, Carte carte) {
-        //  Appliquer la gravité uniquement si le personnage est en l'air
+    public boolean mettreAJourPhysique(Personnage personnage, Carte carte) {
+        // Appliquer la gravité
         personnage.appliquerGravite(ConstantesJeu.GRAVITE, ConstantesJeu.VITESSE_CHUTE_MAX);
 
-        //  Coordonnées des pieds du personnage (centre bas du sprite)
-        double piedX = personnage.getX() + personnage.getSprite().getFitWidth() / 2;
-        double piedY = personnage.getY() + personnage.getSprite().getFitHeight();
+        double largeur = personnage.getSprite().getFitWidth();
+        double hauteur = personnage.getSprite().getFitHeight();
 
-        int colonne = (int) (piedX / ConstantesJeu.TAILLE_TUILE);
-        int ligne = (int) (piedY / ConstantesJeu.TAILLE_TUILE);
+        double newX = personnage.getX() + personnage.getVitesseX();
+        double newY = personnage.getY() + personnage.getVitesseY();
 
-        // Vérifier si le sol est solide sous les pieds
-        if (carte.estSolide(ligne, colonne)) {
-            double ySol = ligne * ConstantesJeu.TAILLE_TUILE;
-
-            // Si le personnage tombe et dépasse le sol : poser au sol
-            if (personnage.getVitesseY() >= 0 && piedY >= ySol) {
-                personnage.poserAuSol(ySol - personnage.getSprite().getFitHeight());
-
-                //System.out.println("Collision au sol détectée → personnage posé à y=" + personnage.getY());
+        // --- Gestion des collisions horizontales ---
+        if (personnage.getVitesseX() > 0) { // vers la droite
+            int col = (int) ((newX + largeur - 1) / ConstantesJeu.TAILLE_TUILE);
+            int top = (int) (personnage.getY() / ConstantesJeu.TAILLE_TUILE);
+            int bottom = (int) ((personnage.getY() + hauteur - 1) / ConstantesJeu.TAILLE_TUILE);
+            for (int l = top; l <= bottom; l++) {
+                if (carte.estSolide(l, col)) {
+                    newX = col * ConstantesJeu.TAILLE_TUILE - largeur;
+                    personnage.setVitesseX(0);
+                    break;
+                }
             }
-        } else {
-            // Aucun sol détecté
-            personnage.setEstAuSol(false);
-            //System.out.println("Personnage en l'air, gravité appliquée. y=" + personnage.getY() + ", vY=" + personnage.getVitesseY());
+        } else if (personnage.getVitesseX() < 0) { // vers la gauche
+            int col = (int) (newX / ConstantesJeu.TAILLE_TUILE);
+            int top = (int) (personnage.getY() / ConstantesJeu.TAILLE_TUILE);
+            int bottom = (int) ((personnage.getY() + hauteur - 1) / ConstantesJeu.TAILLE_TUILE);
+            for (int l = top; l <= bottom; l++) {
+                if (carte.estSolide(l, col)) {
+                    newX = (col + 1) * ConstantesJeu.TAILLE_TUILE;
+                    personnage.setVitesseX(0);
+                    break;
+                }
+            }
         }
 
-        // Mise à jour finale de la position
-        personnage.mettreAJourPosition();
+        personnage.setX(newX);
+
+        // --- Gestion des collisions verticales ---
+        boolean auSolAvant = personnage.estAuSol();
+        boolean auSolApres = false;
+        if (personnage.getVitesseY() > 0) { // chute
+            int ligneBas = (int) ((newY + hauteur - 1) / ConstantesJeu.TAILLE_TUILE);
+            int colGauche = (int) (newX / ConstantesJeu.TAILLE_TUILE);
+            int colDroite = (int) ((newX + largeur - 1) / ConstantesJeu.TAILLE_TUILE);
+            for (int c = colGauche; c <= colDroite; c++) {
+                int id = carte.getValeurTuile(ligneBas, c);
+                if (carte.estSolide(ligneBas, c) && TileType.fromId(id) != TileType.ARBRE) {
+                    newY = ligneBas * ConstantesJeu.TAILLE_TUILE - hauteur;
+                    personnage.setVitesseY(0);
+                    auSolApres = true;
+                    break;
+                }
+            }
+        } else if (personnage.getVitesseY() < 0) { // saut
+            int ligneHaut = (int) (newY / ConstantesJeu.TAILLE_TUILE);
+            int colGauche = (int) (newX / ConstantesJeu.TAILLE_TUILE);
+            int colDroite = (int) ((newX + largeur - 1) / ConstantesJeu.TAILLE_TUILE);
+            for (int c = colGauche; c <= colDroite; c++) {
+                int id = carte.getValeurTuile(ligneHaut, c);
+                if (carte.estSolide(ligneHaut, c) && TileType.fromId(id) != TileType.ARBRE) {
+                    newY = (ligneHaut + 1) * ConstantesJeu.TAILLE_TUILE;
+                    personnage.setVitesseY(0);
+                    break;
+                }
+            }
+        } else {
+            int ligneBas = (int) ((newY + hauteur - 1) / ConstantesJeu.TAILLE_TUILE);
+            int colGauche = (int) (newX / ConstantesJeu.TAILLE_TUILE);
+            int colDroite = (int) ((newX + largeur - 1) / ConstantesJeu.TAILLE_TUILE);
+            for (int c = colGauche; c <= colDroite; c++) {
+                int id = carte.getValeurTuile(ligneBas, c);
+                if (carte.estSolide(ligneBas, c) && TileType.fromId(id) != TileType.ARBRE) {
+                    auSolApres = true;
+                    break;
+                }
+            }
+        }
+        personnage.setY(newY);
+        personnage.setEstAuSol(auSolApres);
+        return !auSolAvant && auSolApres;
     }
 }

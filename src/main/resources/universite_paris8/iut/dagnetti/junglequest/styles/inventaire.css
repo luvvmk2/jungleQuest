@@ -40,3 +40,15 @@
     -fx-effect: dropshadow(gaussian, rgba(140,255,140,0.5), 6, 0.2, 0, 0);
 }
 
+.slot-epee {
+    -fx-background-color: rgba(26,26,26,0.8);
+    -fx-border-color: gold;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-pref-width: 44;
+    -fx-pref-height: 44;
+    -fx-alignment: center;
+    -fx-padding: 0 12 0 0;
+}
+

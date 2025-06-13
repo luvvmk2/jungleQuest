@@ -110,4 +110,34 @@ public abstract class Personnage {
         this.estAuSol = auSol;
     }
 
+    /**
+     * Positionne le personnage horizontalement.
+     */
+    public void setX(double x) {
+        this.x = x;
+        this.sprite.setX(x);
+    }
+
+    /**
+     * Positionne le personnage verticalement.
+     */
+    public void setY(double y) {
+        this.y = y;
+        this.sprite.setY(y);
+    }
+
+    /**
+     * Modifie la vitesse horizontale du personnage.
+     */
+    public void setVitesseX(double vitesseX) {
+        this.vitesseX = vitesseX;
+    }
+
+    /**
+     * Modifie la vitesse verticale du personnage.
+     */
+    public void setVitesseY(double vitesseY) {
+        this.vitesseY = vitesseY;
+    }
+
 }
