@@ -41,7 +41,6 @@ public class ControleurJeu {
 
     private int compteurAttaque = 0;
     private int frameMort = 0;
-    private int frameSort = 0;
     private double offsetX = 0;
 
     private boolean joueurMort = false;
@@ -134,20 +133,26 @@ public class ControleurJeu {
         boolean toucheAccroupi = clavier.estAppuyee(KeyCode.CONTROL);
         boolean toucheBouclier = clavier.estAppuyee(KeyCode.SHIFT);
         boolean toucheDegats = clavier.estAppuyee(KeyCode.M);
-        boolean toucheMort = clavier.estAppuyee(KeyCode.DIGIT2);
-        boolean toucheSort = clavier.estAppuyee(KeyCode.E);
-        boolean touchePreparationSaut = clavier.estAppuyee(KeyCode.DIGIT3);
-        boolean toucheAtterrissage = clavier.estAppuyee(KeyCode.DIGIT4);
+
+        // Gestion de la sélection des objets de l'inventaire
+        if (inventaireController != null) {
+            if (clavier.estAppuyee(KeyCode.DIGIT1)) inventaireController.selectionnerIndex(0);
+            else if (clavier.estAppuyee(KeyCode.DIGIT2)) inventaireController.selectionnerIndex(1);
+            else if (clavier.estAppuyee(KeyCode.DIGIT3)) inventaireController.selectionnerIndex(2);
+            else if (clavier.estAppuyee(KeyCode.DIGIT4)) inventaireController.selectionnerIndex(3);
+            else if (clavier.estAppuyee(KeyCode.DIGIT5)) inventaireController.selectionnerIndex(4);
+            else if (clavier.estAppuyee(KeyCode.DIGIT6)) inventaireController.selectionnerIndex(5);
+            else if (clavier.estAppuyee(KeyCode.DIGIT7)) inventaireController.selectionnerIndex(6);
+            else if (clavier.estAppuyee(KeyCode.DIGIT8)) inventaireController.selectionnerIndex(7);
+            else if (clavier.estAppuyee(KeyCode.DIGIT9)) inventaireController.selectionnerIndex(8);
+            if (clavier.estAppuyee(KeyCode.E)) inventaireController.deselectionner();
+        }
 
         if (toucheDegats) {
             joueur.subirDegats(1);
         }
 
         if (joueur.getPointsDeVie() <= 0) {
-            joueurMort = true;
-        }
-
-        if (toucheMort) {
             joueurMort = true;
         }
 
@@ -206,14 +211,6 @@ public class ControleurJeu {
             return;
         } else if (toucheDegats) {
             animation.animerDegats(sprite);
-        } else if (toucheSort) {
-            animation.animerSort(sprite, frameSort++);
-            if (frameSort >= 8) frameSort = 0;
-        } else if (touchePreparationSaut) {
-            animation.animerIdle(sprite, DELAI_FRAME);
-            animation.animerPreparationSaut(sprite);
-        } else if (toucheAtterrissage) {
-            animation.animerAtterrissage(sprite);
         } else if (joueur.estEnAttaque()) {
             animation.animerAttaque(sprite, DELAI_FRAME, () -> joueur.finAttaque());
             compteurAttaque++;

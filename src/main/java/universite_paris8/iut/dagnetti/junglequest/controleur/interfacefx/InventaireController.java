@@ -12,6 +12,8 @@ import universite_paris8.iut.dagnetti.junglequest.modele.item.Inventaire;
 
 import java.net.URL;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class InventaireController implements Initializable {
@@ -20,6 +22,7 @@ public class InventaireController implements Initializable {
     private HBox slotBar;
     private Inventaire inventaire;
     private String itemSelectionne;
+    private List<String> ordreItems = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -42,6 +45,7 @@ public class InventaireController implements Initializable {
         if (inventaire == null) {
             System.err.println("Inventaire non initialisé (null).");
         } else {
+            ordreItems = new ArrayList<>(inventaire.getItems().keySet());
             afficherSlots();
             itemSelectionne = null;
             System.out.println("Inventaire appliqué au contrôleur. Contenu : " + inventaire.getItems().size() + " item(s).");
@@ -54,20 +58,22 @@ public class InventaireController implements Initializable {
     private void afficherSlots() {
         slotBar.getChildren().clear();
 
-        //  Affichage des objets possédés
-        for (Map.Entry<String, Integer> entry : inventaire.getItems().entrySet()) {
-            String nom = entry.getKey();
-            int quantite = entry.getValue();
+        // Slot fixe pour l'épée
+        StackPane slotEpee = creerSlotEpee();
+        slotBar.getChildren().add(slotEpee);
 
+        //  Affichage des objets possédés dans l'ordre mémorisé
+        for (String nom : ordreItems) {
+            int quantite = inventaire.getItems().getOrDefault(nom, 0);
             StackPane slot = creerSlot(nom, quantite);
             slotBar.getChildren().add(slot);
         }
 
         // Complétion visuelle avec des slots vides
-        int slotsUtilisés = inventaire.getItems().size();
+        int slotsUtilises = ordreItems.size();
         int slotsTotaux = 9;
 
-        for (int i = slotsUtilisés; i < slotsTotaux; i++) {
+        for (int i = slotsUtilises; i < slotsTotaux; i++) {
             StackPane vide = creerSlotVide();
             slotBar.getChildren().add(vide);
         }
@@ -134,6 +140,25 @@ public class InventaireController implements Initializable {
     /**réinitialise la séléction d'item */
     public void deselectionner(){
         itemSelectionne = null;
+    }
+
+    /**
+     * Sélectionne l'objet à l'indice donné dans l'inventaire.
+     */
+    public void selectionnerIndex(int index) {
+        if (index >= 0 && index < ordreItems.size()) {
+            itemSelectionne = ordreItems.get(index);
+        }
+    }
+
+    private StackPane creerSlotEpee() {
+        StackPane slot = new StackPane();
+        slot.getStyleClass().add("slot-epee");
+        Label icon = new Label("\u2694"); // simple sword unicode
+        icon.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+        slot.getChildren().add(icon);
+        slot.setOnMouseClicked(e -> itemSelectionne = null);
+        return slot;
     }
 
     /**
